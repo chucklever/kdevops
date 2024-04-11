@@ -6,6 +6,8 @@ nfsd_packages:
   - policycoreutils
   - python3-policycoreutils
 
+krb5_packages: []
+
 fstype_userspace_progs:
   btrfs: btrfs-progs
   ext4: e2fsprogs

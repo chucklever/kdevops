@@ -5,6 +5,9 @@ nfsd_packages:
   - nfs-kernel-server
   - policycoreutils
 
+krb5_packages:
+  - gssproxy
+
 fstype_userspace_progs:
   btrfs: btrfs-progs
   ext4: e2fsprogs

@@ -4,6 +4,10 @@ nfsd_packages:
   - nfs-utils
   - policycoreutils
 
+krb5_packages:
+  - gssproxy
+  - libverto-libev1
+
 fstype_userspace_progs:
   btrfs: btrfsprogs
   ext4: e2fsprogs

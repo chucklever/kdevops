@@ -1,15 +1,39 @@
 ---
-- name: Debian-specific setup
-  ansible.builtin.include_tasks: roles/nfsd/tasks/install-deps/debian/main.yml
-  when: ansible_os_family == 'Debian'
+- name: Set OS-specific variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+        - default.yml
+      paths:
+        - 'vars'
+  tags: vars
 
-- name: SuSE-specific setup
-  ansible.builtin.include_tasks: roles/nfsd/tasks/install-deps/suse/main.yml
-  when: ansible_os_family == 'Suse'
+- name: Determine the fsprogs package needed for "{{ nfsd_export_fstype }}"
+  ansible.builtin.set_fact:
+    fsprogs: "{{ fstype_userspace_progs[nfsd_export_fstype] | default() }}"
 
-- name: Red Hat-specific setup
-  ansible.builtin.include_tasks: roles/nfsd/tasks/install-deps/redhat/main.yml
-  when: ansible_os_family == 'RedHat'
+- name: Add fsprogs dependencies to the nfsd_packages list
+  ansible.builtin.set_fact:
+    nfsd_packages: "{{ nfsd_packages + [fsprogs] }}"
+  when:
+    - fsprogs is defined
+    - fsprogs
+
+- name: Add krb5 dependencies to the nfsd_packages list
+  ansible.builtin.set_fact:
+    nfsd_packages: "{{ nfsd_packages + krb5_packages }}"
+  when: kdevops_krb5_enable|bool
+
+- name: Install dependencies for nfsd
+  become: true
+  become_flags: 'su - -c'
+  become_method: ansible.builtin.sudo
+  ansible.builtin.package:
+    name: "{{ nfsd_packages }}"
+    state: present
 
 - name: Generate /etc/nfs.conf
   become: yes
