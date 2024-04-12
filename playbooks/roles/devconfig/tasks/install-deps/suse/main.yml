@@ -231,9 +231,8 @@
 - name: Do full upgrade
   become: yes
   become_method: sudo
-  zypper:
-    state: dist-upgrade
-    name: '*'
+  ansible.builtin.command:
+    cmd: "zypper -n dist-upgrade"
   when:
     - repos_will_be_added|bool
     - devconfig_try_upgrade|bool
@@ -249,7 +248,7 @@
 - name: Install nvme tools
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - nvme-cli
     state: present
@@ -261,7 +260,7 @@
 - name: Install fio when possible
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - fio
     state: present
@@ -273,7 +272,7 @@
 - name: Install git-core when possible
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - git-core
     state: present
@@ -285,7 +284,7 @@
 - name: Install git when possible
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - git
     state: present
@@ -297,7 +296,7 @@
 - name: Install xfsdump when possible
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - xfsdump
     state: present
@@ -309,7 +308,7 @@
 - name: Install packages on newer distro when possible
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - bison
       - libaio-devel
@@ -324,7 +323,7 @@
 - name: Install packages not available on sle11 or sle10
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - dump
       - flex
@@ -340,7 +339,7 @@
 - name: Install packages we typically care about
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - e2fsprogs
       - xfsprogs
@@ -383,7 +382,7 @@
 - name: Install snmp
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - net-snmp
   when:
@@ -432,7 +431,7 @@
 - name: Install kdump
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - kdump
   when:
@@ -539,9 +538,10 @@
 - name: Install systemd-journal-remote
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - systemd-journal-remote
+    state: present
   when:
     - devconfig_enable_systemd_journal_remote|bool
     - repos_will_be_added|bool
@@ -550,9 +550,10 @@
 - name: Install systemd-timesyncd
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - systemd-timesyncd
+    state: present
   when:
     - devconfig_enable_systemd_timesyncd|bool
     - repos_will_be_added|bool
