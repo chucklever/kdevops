@@ -82,15 +82,11 @@
 - name: Install kotd
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - kernel-default
     update_cache: yes
-    allow_vendor_change: yes
-    disable_recommends: no
-    force_resolution: yes
     state: latest
-    force: yes
   when:
     - devconfig_enable_kotd|bool
   tags: [ 'kotd' ]
