@@ -55,7 +55,7 @@
 - name: Install build dependencies for ndctl
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - git-core
       - meson
@@ -77,6 +77,5 @@
       - libtraceevent-devel
       - libtracefs-devel
     state: present
-    replacefiles: true
   when:
     - repos_present|bool
