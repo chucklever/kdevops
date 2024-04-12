@@ -31,13 +31,11 @@
 - name: Install vagrant and vagrant-libvirt from opensuse repository
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - vagrant
       - vagrant-libvirt
-    extra_args: '--allow-vendor-change'
     state: latest
-    disable_recommends: no
   when:
     - not force_install_zip|bool
     - not force_install_if_present|bool
@@ -47,7 +45,7 @@
 - name: Install vagrant and vagrant-libvirt from your tumbleweed repository
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - vagrant
       - vagrant-libvirt
@@ -89,7 +87,7 @@
 - name: Install vagrant-libvirt build dependencies
   become: yes
   become_method: sudo
-  zypper:
+  ansible.builtin.package:
     name:
       - qemu
       - libvirt
