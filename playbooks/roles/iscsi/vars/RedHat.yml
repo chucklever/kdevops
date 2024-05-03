@@ -7,3 +7,4 @@ iscsi_target_packages:
 iscsi_initiator_packages:
   - iscsi-initiator-utils
   - libiscsi-utils
+  - sg3_utils
