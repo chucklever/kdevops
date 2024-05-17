@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# kdevops 5.0.2-g589e3ddaf716
+# kdevops 5.0.2-g45e2c7449b74
 #
 CONFIG_TOPDIR_PATH="/home/cel/src/kdevops/buildbot-configs"
 CONFIG_TOPDIR_PATH_HAS_SHA256SUM=y
@@ -8,7 +8,7 @@ CONFIG_TOPDIR_PATH_SHA256SUM="67fea89637cde9a6f630c7cc3549c7a6ed3a8ce960cd46e048
 # CONFIG_KDEVOPS_FIRST_RUN is not set
 CONFIG_DEFAULT_BLKTESTS_URL="https://github.com/osandov/blktests.git"
 CONFIG_DEFAULT_BLKTRACE_URL="https://git.kernel.dk/blktrace"
-CONFIG_DEFAULT_DATE_ISO8601="2024-12-07"
+CONFIG_DEFAULT_DATE_ISO8601="2024-12-17"
 CONFIG_DEFAULT_DBENCH_URL="https://github.com/linux-kdevops/dbench.git"
 CONFIG_DEFAULT_FSTESTS_GIT_URL="git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git"
 CONFIG_DEFAULT_FSTESTS_HTTPS_URL="https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git"
@@ -98,7 +98,7 @@ CONFIG_GUESTFS=y
 CONFIG_LIBVIRT=y
 CONFIG_GUESTFS_FEDORA=y
 # CONFIG_GUESTFS_DEBIAN is not set
-CONFIG_VIRT_BUILDER_OS_VERSION="fedora-39"
+CONFIG_VIRT_BUILDER_OS_VERSION="fedora-40"
 # CONFIG_LIBVIRT_INSTALL is not set
 # CONFIG_LIBVIRT_CONFIGURE is not set
 # CONFIG_LIBVIRT_VERIFY is not set
