@@ -1,0 +1,24 @@
+---
+rdstcp_packages:
+  - autoconf
+  - automake
+  - firewalld                                                                   
+  - gcc
+  - git-core
+  - pkgconf
+  - python3-firewall  
+  - tcpdump
+
+rdstcp_remove:
+  - ibacm
+  - infiniband-diags
+  - libibumad
+  - librdmacm
+  - librdmacm-utils
+  - mstflint
+  - opensm
+  - opensm-libs
+  - perftest
+  - qperf
+  - rdma-core
+  - rdma-core-devel

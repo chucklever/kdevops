@@ -1,0 +1,5 @@
+---
+rdstcp_packages:
+  - autoconf
+  - tcpdump
+  - git-core

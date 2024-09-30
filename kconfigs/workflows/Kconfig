@@ -182,6 +182,13 @@ config KDEVOPS_WORKFLOW_DEDICATE_SYSBENCH
 	  This will dedicate your configuration to running only the
 	  sysbench workflow.
 
+config KDEVOPS_WORKFLOW_DEDICATE_RDSTCP
+	bool "rdstcp"
+	select KDEVOPS_WORKFLOW_ENABLE_RDSTCP
+	help
+	  This will dedicate your configuration to running only the
+	  RDS-TCP workflow.
+
 endchoice
 
 config KDEVOPS_WORKFLOW_NAME
@@ -272,12 +279,12 @@ config KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_LTP
 	  Select this option if you want to provision ltp on a single
 	  target node for by-hand testing.
 
-config KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_NFSTEST
-	bool "nfstest"
-	select KDEVOPS_WORKFLOW_ENABLE_NFSTEST
+config KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_RDSTCP
+	bool "rdstcp"
+	select KDEVOPS_WORKFLOW_ENABLE_RDSTCP
 	depends on LIBVIRT || TERRAFORM_PRIVATE_NET
 	help
-	  Select this option if you want to provision nfstest on a
+	  Select this option if you want to provision RDS-TCP on a
 	  single target node for by-hand testing.
 
 config KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_SYSBENCH
@@ -368,16 +375,16 @@ source "workflows/ltp/Kconfig"
 endmenu
 endif # KDEVOPS_WORKFLOW_ENABLE_GITR
 
-config KDEVOPS_WORKFLOW_ENABLE_NFSTEST
+config KDEVOPS_WORKFLOW_ENABLE_RDSTCP
 	bool
 	output yaml
-	default y if KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_NFSTEST || KDEVOPS_WORKFLOW_DEDICATE_NFSTEST
+	default y if KDEVOPS_WORKFLOW_NOT_DEDICATED_ENABLE_RDSTCP || KDEVOPS_WORKFLOW_DEDICATE_RDSTCP
 
-if KDEVOPS_WORKFLOW_ENABLE_NFSTEST
-menu "Configure and run the nfstest suite"
-source "workflows/nfstest/Kconfig"
+if KDEVOPS_WORKFLOW_ENABLE_RDSTCP
+menu "Configure and run the RDS-TCP suite"
+source "workflows/rdstcp/Kconfig"
 endmenu
-endif # KDEVOPS_WORKFLOW_ENABLE_NFSTEST
+endif # KDEVOPS_WORKFLOW_ENABLE_RDSTCP
 
 config KDEVOPS_WORKFLOW_ENABLE_SYSBENCH
 	bool

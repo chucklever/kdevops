@@ -1,0 +1,31 @@
+if KDEVOPS_WORKFLOW_ENABLE_RDSTCP
+
+config RDSTCP_REPO
+	string "The rds-tools repository"
+	default "https://github.com/oracle/rds-tools.git"
+	help
+	  The rds-tools repository to clone.
+
+config RDSTCP_REPO_COMMIT
+	string "The version of rds-tools to check out"
+	default "master"
+	help
+	  The version of rds-tools to be used for the tests.
+
+if KDEVOPS_WORKFLOW_DEDICATE_RDSTCP
+
+config RDSTCP_TEST_GROUP_PING
+	bool "Enable the rds-ping testing section"
+	default n
+	help
+	  Build and install the rds-ping tool on the target nodes.
+
+config RDSTCP_TEST_GROUP_STRESS
+	bool "Enable the rds-stress testing section"
+	default n
+	help
+	  Build and install the rds-stress tool on the target nodes.
+
+endif # KDEVOPS_WORKFLOW_DEDICATE_RDSTCP
+
+endif # KDEVOPS_WORKFLOW_ENABLE_RDSTCP
