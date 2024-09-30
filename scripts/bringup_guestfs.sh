@@ -204,7 +204,7 @@ pre_install_customizations()
 	if [ $? -eq 0 ]; then
 		KDEVOPS_UID="-u `id -u kdevops`"
 	fi
-	if echo $OS_VERSION | grep -qE "^(rhel|fedora|centos)"; then
+	if echo $OS_VERSION | grep -qE "^(rhel|fedora|centos|oracle)"; then
 		UPDATE_GRUB_CMD="/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg"
 	else
 		UPDATE_GRUB_CMD="/usr/sbin/update-grub2"
@@ -306,7 +306,7 @@ if [ ! -f $BASE_IMAGE ]; then
 	fi
 
 	echo "Generating new base image for ${OS_VERSION}"
-	$USE_SUDO virt-builder ${OS_VERSION} --arch `uname -m` -o $BASE_IMAGE --size 20G --format raw --commands-from-file $cmdfile
+	$USE_SUDO virt-builder ${OS_VERSION} --arch `uname -m` -o $BASE_IMAGE --size 37G --format raw --commands-from-file $cmdfile
 	if [[ $? -ne 0 ]]; then
 		echo "Failed to build custom image $BASE_IMAGE"
 		exit 1
