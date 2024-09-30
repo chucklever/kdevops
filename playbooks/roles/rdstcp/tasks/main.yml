@@ -1,0 +1,352 @@
+---
+- name: Include optional extra_vars
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  with_first_found:
+    - files:
+        - "../extra_vars.yml"
+        - "../extra_vars.yaml"
+        - "../extra_vars.json"
+      skip: true
+  failed_when: false
+  tags: vars
+
+- name: Set OS-specific variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - default.yml
+      paths:
+        - "vars"
+  tags: vars
+
+- name: Install dependencies for rdstcp on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.package:
+    name: "{{ rdstcp_packages }}"
+    state: present
+  tags: rdstcp
+
+- name: Remove RDMA-related packages from the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.package:
+    name: "{{ rdstcp_remove }}"
+    state: absent
+  tags: rdstcp
+
+- name: Open the rds-stress control plane port on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.posix.firewalld:
+    port: 4000/tcp
+    permanent: true
+    immediate: true
+    state: enabled
+  when: ansible_os_family != "Debian"
+  tags: rdstcp
+
+- name: Open the RDGS service port on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.posix.firewalld:
+    port: 16385/tcp
+    permanent: true
+    immediate: true
+    state: enabled
+  when: ansible_os_family != "Debian"
+  tags: rdstcp
+
+- name: Create the /data mount point on the target nodes
+  ansible.builtin.include_role:
+    name: create_data_partition
+  tags:
+    - data_partition
+    - rdstcp
+
+- name: Set the pathname of the build directory
+  ansible.builtin.set_fact:
+    rdstcp_build_dir: "{{ data_path }}/rdstcp"
+  tags: vars
+
+- name: Remove existing build directory on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.file:
+    path: "{{ rdstcp_build_dir }}"
+    state: absent
+  tags:
+    - build
+    - rdstcp
+
+- name: Clone the full rds-tools source code tree onto the target nodes
+  ansible.builtin.git:
+    repo: "{{ rdstcp_repo }}"
+    dest: "{{ rdstcp_build_dir }}"
+    version: "{{ rdstcp_repo_commit }}"
+    update: true
+  retries: 3
+  delay: 5
+  register: clone_result
+  until: clone_result is succeeded
+  tags:
+    - build
+    - rdstcp
+
+- name: Run autoconf on the target nodes
+  ansible.builtin.command:
+    cmd: "autoconf"
+    chdir: "{{ rdstcp_build_dir }}"
+    creates: "{{ rdstcp_build_dir }}/configure"
+  tags:
+    - build
+    - rdstcp
+
+- name: Configure rds-tools on the target nodes
+  ansible.builtin.command:
+    cmd: "./configure"
+    chdir: "{{ rdstcp_build_dir }}"
+    creates: "{{ rdstcp_build_dir }}/config.status"
+  tags:
+    - build
+    - rdstcp
+
+- name: Build rds-tools on the target nodes
+  community.general.make:
+    chdir: "{{ rdstcp_build_dir }}"
+    jobs: "{{ ansible_processor_nproc }}"
+  tags:
+    - build
+    - rdstcp
+
+- name: Install rds-tools on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  community.general.make:
+    chdir: "{{ rdstcp_build_dir }}"
+    target: "install"
+  tags:
+    - build
+    - rdstcp
+
+- name: Install test_rds_tcp.sh on the target nodes
+  ansible.builtin.template:
+    src: "templates/test_rds_tcp.sh"
+    dest: "/home/kdevops/test_rds_tcp.sh"
+    mode: "u=rwx,g=rx,o=rx"
+  tags:
+    - build
+    - rdstcp
+
+- name: Install rdsstress-listener.service unit file on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.template:
+    src: "templates/rdsstress-listener.service.j2"
+    dest: "/etc/systemd/system/rdsstress-listener.service"
+    mode: "u=rw,g=r,o=r"
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  tags:
+    - build
+    - rdstcp
+
+- name: Force systemd on the target nodes to reload its configuration
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  tags:
+    - build
+    - rdstcp
+
+- name: Install an ssh config file on each of the target nodes
+  ansible.builtin.template:
+    src: "templates/ssh_config"
+    dest: "/home/kdevops/.ssh/config"
+    mode: "u=rw,g=r,o=r"
+  tags:
+    - build
+    - rdstcp
+
+- name: Generate an ssh key-pair on each of the target nodes
+  ansible.builtin.user:
+    name: kdevops
+    generate_ssh_key: true
+    ssh_key_type: "ed25519"
+  register: keygen_output
+  tags:
+    - build
+    - rdstcp
+
+- name: Fetch the new public ssh key from each target node
+  ansible.builtin.fetch:
+    dest: "/tmp"
+    src: "/home/kdevops/.ssh/id_ed25519.pub"
+  tags:
+    - build
+    - rdstcp
+
+- name: Set new authorized public keys on each of the target nodes
+  ansible.posix.authorized_key:
+    user: kdevops
+    state: present
+    key: "{{ lookup('file', '/tmp/{{ item }}/home/kdevops/.ssh/id_ed25519.pub') }}"
+  throttle: 1  # running this in parallel can clobber the authorized_key file
+  with_items: "{{ groups['all'] }}"
+  tags:
+    - build
+    - rdstcp
+
+- name: Ensure the rdsstress-listener service has stopped
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  delegate_to: "{{ kdevops_host_prefix }}-dopey"
+  ansible.builtin.systemd_service:
+    name: rdsstress-listener
+    state: stopped
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  run_once: true
+  tags: run_tests
+
+- name: Unload modules on target nodes before running tests
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  community.general.modprobe:
+    name: ["iw_cm", "ib_cm", "ib_core", "rdma_cm", "rds_rdma", "rds_tcp", "rds"]
+    state: absent
+  tags: run_tests
+
+- name: Load the rds_tcp.ko module on the target nodes
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  community.general.modprobe:
+    name: rds_tcp
+    state: present
+  tags: run_tests
+
+- name: Run the rds-ping test
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  delegate_to: "{{ kdevops_host_prefix }}-sneezy"
+  ansible.builtin.command:
+    argv:
+      - "/usr/local/bin/rds-ping"
+      - "-c"
+      - "10"
+      - "-I"
+      - "{{ ansible_default_ipv4.address }}"
+      - "{{ kdevops_host_prefix }}-dopey"
+  register: ping_results
+  failed_when: false
+  changed_when: false
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("ping")
+  run_once: true
+  tags: run_tests
+
+- name: Bring up the rds-stress listener service
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  delegate_to: "{{ kdevops_host_prefix }}-dopey"
+  ansible.builtin.systemd_service:
+    name: rdsstress-listener
+    state: started
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  run_once: true
+  tags: run_tests
+
+- name: Wait for the rds-stress listener service to start
+  delegate_to: "{{ kdevops_host_prefix }}-sneezy"
+  ansible.builtin.command: /usr/bin/sleep 5
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  run_once: true
+  changed_when: false
+  tags: run_tests
+
+- name: Run the rds-stress test
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  delegate_to: "{{ kdevops_host_prefix }}-sneezy"
+  ansible.builtin.command:
+    argv:
+      - "/usr/local/bin/rds-stress"
+      - "-T"
+      - "10"
+      - "-r"
+      - "{{ ansible_default_ipv4.address }}"
+      - "-s"
+      - "{{ kdevops_host_prefix }}-dopey"
+  register: stress_results
+  failed_when: false
+  changed_when: false
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  run_once: true
+  tags: run_tests
+
+- name: Shut down the rdsstress-listener service
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  delegate_to: "{{ kdevops_host_prefix }}-dopey"
+  ansible.builtin.systemd_service:
+    name: rdsstress-listener
+    state: stopped
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+  run_once: true
+  tags: run_tests
+
+- name: Dump ping results
+  delegate_to: "{{ kdevops_host_prefix }}-sneezy"
+  ansible.builtin.debug:
+    msg: "{{ ping_results.stdout_lines|join('\n') }}"
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("ping")
+    - not ping_results.failed
+  run_once: true
+  tags: run_tests
+
+- name: Dump stress results
+  delegate_to: "{{ kdevops_host_prefix }}-sneezy"
+  ansible.builtin.debug:
+    msg: "{{ stress_results.stdout_lines|join('\n') }}"
+  when:
+    - kdevops_workflows_dedicated_workflow|bool
+    - rdstcp_enabled_test_groups is contains("stress")
+    - not stress_results.failed
+  run_once: true
+  tags: run_tests

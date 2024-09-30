@@ -1,0 +1,5 @@
+---
+# Our sensible defaults for the rdstcp role.
+#
+kdevops_run_rdstcp: false
+kdevops_workflows_dedicated_workflow: false
