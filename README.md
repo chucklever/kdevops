@@ -147,6 +147,16 @@ then run:
 
 For more details see [kdevops nfstest docs](docs/nfstest.md)
 
+### Start running the rdstcp suite in 2 commands
+
+To test a kernel using the rdstcp suite, enable the rdstcp workflow and
+then run:
+
+  * `make rdstcp`
+  * `make rdstcp-baseline`
+
+For more details see [kdevops rdstcp docs](docs/rdstcp.md)
+
 ### Runs some kernel selftests in a parallel manner
 
 kdevops supports running Linux kernel selftests in parallel, this is as easy as:

@@ -1,0 +1,22 @@
+---
+rdstcp_packages:
+  - autoconf
+  - automake
+  - tcpdump
+  - gcc
+  - pkgconf
+  - git-core
+
+rdstcp_remove:
+  - ibacm
+  - infiniband-diags
+  - libibumad
+  - librdmacm
+  - librdmacm-utils
+  - mstflint
+  - opensm
+  - opensm-libs
+  - perftest
+  - qperf
+  - rdma-core
+  - rdma-core-devel
