@@ -29,7 +29,7 @@
   when:
     - nfsd_export_storage_iscsi|bool
 
-- name: Build string of devices to use as PVs
+- name: Build a list of block devices to provision as PVs
   set_fact:
     nfsd_lvm_pvs: "{{ nfsd_lvm_pvs + [ nfsd_export_device_prefix + item|string ] }}"
   with_items: "{{ range(1, nfsd_export_device_count + 1) }}"
@@ -38,15 +38,34 @@
   when:
     - nfsd_export_storage_local|bool
 
-- name: Create a new LVM VG
-  become: yes
-  become_flags: 'su - -c'
-  become_method: sudo
+- name: Enumerate NVMe devices to provision as PVs
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.command:
+    cmd: "lsblk -np -o PATH,SERIAL"
+  register: lsblk_output
+  changed_when: false
+  when:
+    - nfsd_export_storage_nvme|bool
+
+- name: Build a list of NVMe devices to provision as PVs
+  ansible.builtin.set_fact:
+    nfsd_lvm_pvs: "{{ nfsd_lvm_pvs + [item | split() | first] }}"
+  loop: "{{ lsblk_output.stdout_lines }}"
+  when:
+    - nfsd_export_storage_nvme|bool
+    - '"AWS" in item'
+
+- name: Create a new LVM Volume Group
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
   community.general.lvg:
     vg: "exports"
     pvs: "{{ nfsd_lvm_pvs | join(',') }}"
   when:
-    - nfsd_export_storage_local|bool
+    - nfsd_export_storage_local|bool or nfsd_export_storage_nvme|bool
 
 - name: Create {{ nfsd_export_path }}
   become: yes

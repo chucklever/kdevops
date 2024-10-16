@@ -83,12 +83,18 @@ config NFSD_EXPORT_STORAGE_ISCSI
 	  located on a separate target node and accessed via
 	  iSCSI.
 
+config NFSD_EXPORT_STORAGE_NVME
+	bool "NVMe"
+	help
+	  Exported file systems will reside in NVMe namespaces
+	  local to the NFS server itself.
+
 endchoice
 
 if NFSD_EXPORT_STORAGE_LOCAL
 
 config NFSD_EXPORT_DEVICE_PREFIX
-	string "The device prefix to use for LVM PVs"
+	string "The block device name prefix to use for LVM PVs"
 	default "/dev/disk/by-id/nvme-QEMU_NVMe_Ctrl_kdevops" if LIBVIRT && LIBVIRT_EXTRA_STORAGE_DRIVE_NVME
 	default "/dev/disk/by-id/virtio-kdevops" if LIBVIRT && LIBVIRT_EXTRA_STORAGE_DRIVE_VIRTIO
 	default "/dev/disk/by-id/ata-QEMU_HARDDISK_kdevops" if LIBVIRT && LIBVIRT_EXTRA_STORAGE_DRIVE_IDE
