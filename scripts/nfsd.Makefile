@@ -10,6 +10,10 @@ ifeq (y,$(CONFIG_NFSD_EXPORT_STORAGE_ISCSI))
 NFSD_EXTRA_ARGS += nfsd_export_storage_iscsi=true
 endif
 
+ifeq (y,$(CONFIG_NFSD_EXPORT_STORAGE_NVME))
+NFSD_EXTRA_ARGS += nfsd_export_storage_nvme=true
+endif
+
 ifeq (y,$(CONFIG_FSTESTS_NFS_SECTION_NFSD))
 NFSD_EXTRA_ARGS += kdevops_loopback_nfs_enable=true
 endif

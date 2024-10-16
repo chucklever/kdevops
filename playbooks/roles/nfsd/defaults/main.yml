@@ -10,5 +10,6 @@ nfsd_lease_time: "90"
 
 nfsd_export_storage_local: false
 nfsd_export_storage_iscsi: false
+nfsd_export_storage_nvme: false
 
 kdevops_krb5_enable: false
