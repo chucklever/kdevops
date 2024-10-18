@@ -5,5 +5,6 @@
 # We default to not run tests.
 kdevops_run_pynfs: False
 pynfs_pnfs_block: False
+kdevops_enable_terraform: false
 
 pynfs_data: "{{ data_path }}/pynfs"
