@@ -1032,7 +1032,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Lever</td>
-<td class="center">Expires 21 April 2025</td>
+<td class="center">Expires 24 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1045,12 +1045,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-cel-nfsv4-nfsacl-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-10-18" class="published">18 October 2024</time>
+<time datetime="2024-10-21" class="published">21 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-04-21">21 April 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-24">24 April 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1104,7 +1104,7 @@ Control Lists stored on an NFS version 2 or version 3 server.<a href="#section-a
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 21 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3527,19 +3527,16 @@ SETACL3res.status to ACL3ERR_INVAL.<a href="#section-6.4.3.4-5" class="pilcrow">
         <h3 id="name-permission-issues">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-permission-issues" class="section-name selfRef">Permission issues</a>
         </h3>
-<p id="section-7.1-1">The NFS version 3 protocol, strictly speaking, does not
-define the permission checking used by servers. However, it
-is expected that a server will do normal operating system
+<p id="section-7.1-1">The NFS protocol, strictly speaking, does not
+define the permission checking used by NFS servers. However, it
+is expected that an NFS server will do normal operating system
 permission checking using AUTH_UNIX style authentication as
 the basis of its protection mechanism, or another stronger
-form of authentication such as AUTH_DES or AUTH_KERB. With
+form of authentication such as RPC_AUTH_GSS. With
 AUTH_UNIX authentication, the server gets the client's
 effective uid, effective gid, and groups on each call and
 uses them to check permission. These are the so-called UNIX
-credentials. AUTH_DES and AUTH_KERB use a network name, or
-netname, as the basis for identification (from which a UNIX
-server derives the necessary standard UNIX credentials).
-There are problems with this method that have been solved.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+credentials.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">Using uid and gid implies that the client and server share
 the same uid list. Every server and client pair must have the
 same mapping from user to uid and from group to gid. Since
@@ -3551,20 +3548,15 @@ authentication domain into another. A discussion of
 techniques for managing a shared user space or for providing
 mechanisms for user ID mapping is beyond the scope of this
 specification.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<p id="section-7.1-3">In most operating systems, a particular user (on UNIX, the
+<p id="section-7.1-3">In POSIX-based operating systems, a particular user (on UNIX, the
 uid 0) has access to all files, no matter what permission and
 ownership they have. This superuser permission may not be
 allowed on the server, since anyone who can become superuser
-on their client could gain access to all remote files. A UNIX
-server by default maps uid 0 to a distinguished value
-(UID_NOBODY), as well as mapping the groups list, before
-doing its access checking. A server implementation may
-provide a mechanism to change this mapping. This works except
-for NFS version 3 protocol root file systems (required for
-diskless NFS version 3 protocol client support), where
-superuser access cannot be avoided.  Export options are used,
-on the server, to restrict the set of clients allowed
-superuser access.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+on their client could gain access to all remote files. A
+POSIX-based NFS server by default maps uid 0 to a distinguished
+value (for instance, UID_NOBODY), as well as mapping the groups
+list, before doing its access checking. A server implementation
+may provide a mechanism to change this mapping.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="duplicate-request-cache">
@@ -3572,10 +3564,10 @@ superuser access.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
         <h3 id="name-duplicate-request-cache">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-duplicate-request-cache" class="section-name selfRef">Duplicate Request Cache</a>
         </h3>
-<p id="section-7.2-1">The typical NFS version 3 protocol failure recovery model
+<p id="section-7.2-1">The typical NFS protocol failure recovery model
 uses client time-out and retry to handle server crashes,
 network partitions, and lost server replies. A retried
-request is called a duplicate of the original.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+request is referred to as a duplicate of the original.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.2-2">When used in a file server context, the term idempotent can
 be used to distinguish between operation types. An idempotent
 request is one that a server can perform more than once with
@@ -3583,53 +3575,35 @@ equivalent results (though it may in fact change, as a side
 effect, the access time on a file, say for READ). Some NFS
 operations are obviously non-idempotent. They cannot be
 reprocessed without special attention simply because they may
-fail if tried a second time. The CREATE request, for example,
+fail if tried a second time. A CREATE request, for example,
 can be used to create a file for which the owner does not
 have write permission. A duplicate of this request cannot
 succeed if the original succeeded. Likewise, a file can be
 removed only once.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
 <p id="section-7.2-3">The side effects caused by performing a duplicate
-non-idempotent request can be destructive (for example, a
-truncate operation causing lost writes). The combination of a
-stateless design with the common choice of an unreliable
-network transport (UDP) implies the possibility of
-destructive replays of non-idempotent requests. Though to be
-more accurate, it is the inherent stateless design of the NFS
-version 3 protocol on top of an unreliable RPC mechanism that
-yields the possibility of destructive replays of
-non-idempotent requests, since even in an implementation of
-the NFS version 3 protocol over a reliable
-connection-oriented transport, a connection break with
-automatic reestablishment requires duplicate request
-processing (the client will retransmit the request, and the
-server needs to deal with a potential duplicate
-non-idempotent request).<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2-4">Most NFS version 3 protocol server implementations use a
-cache of recent requests (called the duplicate request cache)
-for the processing of duplicate non-idempotent requests. The
-duplicate request cache provides a short-term memory
-mechanism in which the original completion status of a
-request is remembered and the operation attempted only once.
-If a duplicate copy of this request is received, then the
-original completion status is returned.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
-<p id="section-7.2-5">The duplicate-request cache mechanism has been useful in
-reducing destructive side effects caused by duplicate NFS
-version 3 protocol requests. This mechanism, however, does
-not guarantee against these destructive side effects in all
-failure modes. Most servers store the duplicate request cache
-in RAM, so the contents are lost if the server crashes.  The
-exception to this may possibly occur in a redundant server
-approach to high availability, where the file system itself
-may be used to share the duplicate request cache state. Even
-if the cache survives server reboots (or failovers in the
-high availability case), its effectiveness is a function of
-its size. A network partition can cause a cache entry to be
-reused before a client receives a reply for the corresponding
-request. If this happens, the duplicate request will be
-processed as a new one, possibly with destructive side
-effects.<a href="#section-7.2-5" class="pilcrow">¶</a></p>
-<p id="section-7.2-6">A description of an early implementation of a
-duplicate request cache can be found in <span>[<a href="#Juszczak" class="cite xref">Juszczak</a>]</span>.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
+non-idempotent request can be destructive. A duplicate
+file truncation can result in lost writes. It is the
+inherent stateless design of the NFS protocol on top
+of an unreliable RPC transport that yields the
+possibility of destructive replays of non-idempotent
+requests. Even in an implementation of the NFS protocol
+over a reliable connection-oriented transport,
+a connection break with automatic reestablishment
+requires duplicate request processing: the client
+retransmits requests that were pending before the
+connection loss, and the server needs to recognize
+and deal with potential duplicate non-idempotent requests.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<p id="section-7.2-4">Most NFS server implementations maintain a cache of
+recent requests, called the duplicate request cache,
+for recognizing duplicate non-idempotent requests. If
+the server receives a request and recognizes it as a
+duplicate of a recently completed request, the server
+returns the original completion status instead of
+processing the duplicate request again.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.2-5">A description of an early implementation of a
+duplicate request cache can be found in <span>[<a href="#Juszczak" class="cite xref">Juszczak</a>]</span>.<a href="#section-7.2-5" class="pilcrow">¶</a></p>
+<p id="section-7.2-6">For all versions of the NFSACL protocol, the SETACL
+procedure is considered to be non-idempotent.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="caching-policies">
@@ -3637,7 +3611,7 @@ duplicate request cache can be found in <span>[<a href="#Juszczak" class="cite x
         <h3 id="name-caching-policies">
 <a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-caching-policies" class="section-name selfRef">Caching Policies</a>
         </h3>
-<p id="section-7.3-1">The NFS version 3 protocol does not define a policy for
+<p id="section-7.3-1">The NFS protocol does not define a policy for
 caching on the client or server. In particular, there is no
 support for strict cache consistency between a client and
 server, nor between different clients.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
