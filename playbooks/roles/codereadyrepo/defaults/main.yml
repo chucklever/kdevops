@@ -1,0 +1,5 @@
+# SPDX-License-Identifier GPL-2.0+
+---
+# Our sensible defaults for the codereadyrepo role.
+
+kdevops_enable_terraform: false
