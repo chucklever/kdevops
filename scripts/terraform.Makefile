@@ -24,8 +24,6 @@ endif
 KDEVOPS_NODES_TEMPLATE :=	$(KDEVOPS_NODES_ROLE_TEMPLATE_DIR)/terraform_nodes.tf.j2
 KDEVOPS_NODES :=		terraform/$(KDEVOPS_CLOUD_PROVIDER)/nodes.tf
 
-TERRAFORM_EXTRA_VARS += kdevops_enable_terraform='True'
-
 TERRAFORM_EXTRA_VARS += kdevops_terraform_provider='$(KDEVOPS_CLOUD_PROVIDER)'
 
 TFVARS_TEMPLATE_DIR=playbooks/roles/gen_tfvars/templates

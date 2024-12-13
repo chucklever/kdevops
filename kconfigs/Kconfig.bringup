@@ -5,6 +5,10 @@ config KDEVOPS_ENABLE_GUESTFS
 	bool
 	output yaml
 
+config KDEVOPS_ENABLE_TERRAFORM
+	bool
+	output yaml
+
 choice
 	prompt "Node bring up method"
 	default GUESTFS
@@ -23,21 +27,16 @@ config TERRAFORM
 	select EXTRA_STORAGE_SUPPORTS_1K
 	select EXTRA_STORAGE_SUPPORTS_2K
 	select EXTRA_STORAGE_SUPPORTS_4K
+	select KDEVOPS_ENABLE_TERRAFORM
 	help
-	  This option will enable use of Vagrant. Enable this if you want to
-	  use terraform to create nodes on a cloud environment such as:
+	  This option enables the use of Terraform. Enable this if you want to
+	  create your target nodes on a cloud provider such as:
 
-	    * Azure
 	    * AWS
-	    * OpenStack
+	    * Azure
 	    * GCE
-
-	  Enabling this option will enable installing terraform dependencies
-	  when you run:
-
-	    make deps
-
-	  If you are not using a cloud environment just disable this.
+	    * OCI
+	    * OpenStack
 
 config SKIP_BRINGUP
 	bool "Skip bring up - bare metal or existing nodes"
