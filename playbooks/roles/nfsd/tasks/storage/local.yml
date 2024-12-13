@@ -1,0 +1,15 @@
+---
+- name: Build a list of block devices to provision as PVs
+  ansible.builtin.set_fact:
+    nfsd_lvm_pvs: "{{ nfsd_lvm_pvs + [nfsd_export_device_prefix + item | string] }}"
+  with_items: "{{ range(1, nfsd_export_device_count + 1) }}"
+  loop_control:
+    label: "Block device: {{ nfsd_export_device_prefix + item | string }}"
+
+- name: Create an LVM Volume Group for NFS exports
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  community.general.lvg:
+    vg: "exports"
+    pvs: "{{ nfsd_lvm_pvs | join(',') }}"
