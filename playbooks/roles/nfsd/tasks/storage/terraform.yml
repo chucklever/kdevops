@@ -1,0 +1,105 @@
+---
+
+# Handle LVM provisioning for target nodes that reside on cloud
+# provides. Currently only AWS is supported, but others can be
+# added.
+
+# AWS: Select unused block devices under /dev/disk/by-id/ .
+#
+# Avoid these two block devices:
+#
+# 1. The block device where the boot partition resides. For
+#    AWS, this device is listed under /dev/disk/by-id/ so it
+#    has to be explicitly skipped here.
+# 2. The block device where the /data partition resides. For
+#    guestfs, this device is named by a path to a block
+#    device directly under /dev
+#
+
+- name: Set the NVMe device search pattern
+  ansible.builtin.set_fact:
+    nfsd_by_id_pattern: "nvme-Amazon*"
+  when:
+    - terraform_aws is defined
+    - terraform_aws|bool
+
+- name: Verify there are block devices to search
+  ansible.builtin.fail:
+    msg: No supported block devices are available for NFSD.
+  when:
+    - nfsd_by_id_pattern is not defined
+
+- name: List block devices
+  ansible.builtin.command:
+    cmd: "lsblk -ln -o NAME,MOUNTPOINTS"
+  register: lsblk_output
+  changed_when: false
+
+- name: Find the boot partition
+  ansible.builtin.set_fact:
+    boot_partition: "/dev/{{ item.split(' ', 1)[0] }}"
+  loop: "{{ lsblk_output.stdout_lines }}"
+  loop_control:
+    label: "Boot partition is /dev/{{ item.split(' ', 1)[0] }}"
+  when:
+    - item.endswith(' /boot')
+
+- name: List block devices again
+  ansible.builtin.command:
+    cmd: "lsblk -no pkname {{ boot_partition }}"
+  register: lsblk_output
+  changed_when: false
+
+- name: Determine block device where the boot partition resides
+  ansible.builtin.set_fact:
+    boot_device: "/dev/{{ lsblk_output.stdout }}"
+
+- name: Show the pathname of the boot device
+  ansible.builtin.debug:
+    msg: "Current boot device: {{ boot_device }}"
+
+- name: Show the pathname of the data device
+  ansible.builtin.debug:
+    msg: "Reserved device for /data: {{ data_device }}"
+
+- name: Discover potential usable block devices
+  ansible.builtin.find:
+    paths: /dev/disk/by-id
+    file_type: link
+    patterns: "{{ nfsd_by_id_pattern }}"
+    excludes: "*_?,*-part?"
+  register: device_ids
+  failed_when:
+    - device_ids.failed or device_ids.matched == 0
+
+- name: Resolve device ID symlinks
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  register: stat_output
+  loop: "{{ device_ids.files }}"
+  loop_control:
+    label: "Resolving {{ item.path }}..."
+
+- name: Build a list of block devices available for LVM
+  ansible.builtin.set_fact:
+    nfsd_lvm_pvs: "{{ nfsd_lvm_pvs + [item.stat.lnk_source] }}"
+  loop: "{{ stat_output.results }}"
+  when:
+    - item.stat.lnk_source != data_device
+    - item.stat.lnk_source != boot_device
+  loop_control:
+    label: "Block device: {{ item.stat.lnk_source }}"
+
+- name: Verify there are remaining candidates to use for physical volumes
+  ansible.builtin.fail:
+    msg: No block devices are available for an LVM volume group.
+  when:
+    - nfsd_lvm_pvs|length == 0
+
+- name: Create an LVM Volume Group for NFS exports
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  community.general.lvg:
+    vg: "exports"
+    pvs: "{{ nfsd_lvm_pvs | join(',') }}"

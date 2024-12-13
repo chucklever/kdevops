@@ -4,3 +4,9 @@
     file: guestfs.yml
   when:
     - kdevops_enable_guestfs|bool
+
+- name: Set up an LVM for terraform
+  ansible.builtin.include_tasks:
+    file: terraform.yml
+  when:
+    - kdevops_enable_terraform|bool

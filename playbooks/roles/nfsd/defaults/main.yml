@@ -12,3 +12,4 @@ nfsd_export_storage_iscsi: false
 kdevops_krb5_enable: false
 
 kdevops_enable_guestfs: false
+kdevops_enable_terraform: false
