@@ -2,8 +2,6 @@
 ---
 # Our sensible defaults for the nfsd role.
 nfsd_lvm_pvs: []
-nfsd_export_device_prefix: ""
-nfsd_export_device_count: 0
 nfsd_export_label: "export"
 nfsd_export_fs_opts: ""
 nfsd_lease_time: "90"
@@ -12,3 +10,5 @@ nfsd_export_storage_local: false
 nfsd_export_storage_iscsi: false
 
 kdevops_krb5_enable: false
+
+kdevops_enable_guestfs: false
