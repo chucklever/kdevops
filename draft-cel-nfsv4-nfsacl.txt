@@ -4,8 +4,8 @@
 
 Network File System Version 4                              C. Lever, Ed.
 Internet-Draft                                                    Oracle
-Intended status: Informational                           21 October 2024
-Expires: 24 April 2025
+Intended status: Informational                           21 January 2025
+Expires: 25 July 2025
 
 
           The Network File System Access Control List Protocol
@@ -50,11 +50,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 April 2025.
+   This Internet-Draft will expire on 25 July 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -171,8 +171,8 @@ Table of Contents
 
    This document describes the protocol based on the nfs_acl.x file that
    is publicly available in the OpenSolaris code base [OpenSolaris].
-   The editor has strived to introduce no changes to the protocol as it
-   is implemented in those operating systems and in Linux.
+   The editor has attempted to introduce no changes to the protocol as
+   it is implemented in those operating systems and in Linux.
 
    This document assumes readers are familiar with the NFS version 2 or
    3 protocols and at least one implementation of them.
@@ -364,7 +364,7 @@ Table of Contents
    Only ACEs that match the requester are considered.  Each ACE is
    processed until all of the bits of the requester's access have been
    ALLOWED.  Once a bit has been ALLOWED, that bit is no longer
-   considered in the processing of subsquent ACEs in the list.
+   considered in the processing of subsequent ACEs in the list.
 
    When the ACL has been fully processed, if there are bits in the
    requester's mask that have not been ALLOWED, access of that type is
@@ -466,7 +466,7 @@ Table of Contents
       |  ACLs?
 
    Setting a file object's mode bits via the NFS SETATTR procedure can
-   change the ACL and setting the NFS access ACL can change the a file
+   change the ACL and setting the NFS access ACL can change the file
    object's mode mode bits.  As such, the order of setting the
    attributes related to mode and NFS ACLs is important.
 
@@ -500,7 +500,7 @@ Table of Contents
 
    100227  The RPC program number for the NFSACL protocol
 
-   Only versions 2 and 3 of this RPC progream are valid.
+   Only versions 2 and 3 of this RPC program are valid.
 
 4.3.  Transport address
 
@@ -586,7 +586,7 @@ Table of Contents
 
    Interoperability between NFS peers that do not implement the NFSACL
    protocol is what we already have today.  Interoperability between
-   peers that both implement the NFSACL procotol is described in the
+   peers that both implement the NFSACL protocol is described in the
    rest of this document.
 
    The following subsections briefly discuss three new interoperability
@@ -617,7 +617,7 @@ Table of Contents
 
    An NFS server that implements the NFSACL protocol might share both
    file systems that implement ACLs and file systems that do not.  In
-   this case, NFS clients detect the presense of an NFSACL service on
+   this case, NFS clients detect the presence of an NFSACL service on
    the NFS server.
 
    For file objects that do not implement ACL support:
@@ -754,10 +754,10 @@ Table of Contents
       correct permission to perform the requested operation.
 
    ACL2ERR_NOSPC  No space left on device.  The operation caused the
-      server's filesystem to reach its limit.
+      server's file system to reach its limit.
 
-   ACL2ERR_ROFS  Read-only filesystem.  Write attempted on a read-only
-      filesystem.
+   ACL2ERR_ROFS  Read-only file system.  Write attempted on a read-only
+      file system.
 
    ACL2ERR_DQUOT  Disk quota exceeded.  The client's disk quota on the
       server has been exceeded.
@@ -788,7 +788,7 @@ Table of Contents
    It is important that this procedure do no work at all so that clients
    can use it to measure the overhead of processing a service request.
    By convention, the NULL procedure should never require any
-   authentication.  A server implmentation may choose to ignore this
+   authentication.  A server implementation may choose to ignore this
    convention, if responding to the NULL procedure call acknowledges the
    existence of a resource to an unauthenticated client.
 
@@ -968,7 +968,7 @@ Table of Contents
 
 5.3.4.3.  DESCRIPTION
 
-   The GETATTR procedure retrieves the current file atttributes
+   The GETATTR procedure retrieves the current file attributes
    associated with the file system object specified by the
    GETATTR2args.fh field.  The client obtains this file handle using one
    of the NFS version 2 LOOKUP, CREATE, MKDIR, SYMLINK procedures, or
@@ -1265,7 +1265,7 @@ Table of Contents
    };
 
    The format of this data type appears to make returning file
-   attributes optional.  However, server implementors are strongly
+   attributes optional.  However, server implementers are strongly
    encouraged to make a best effort to return attributes whenever
    possible, even when returning an error.
 
@@ -2247,8 +2247,8 @@ A.2.  Redaction of GETXATTRDIR Procedures
 
 A.3.  Code Compilation Requirements
 
-   THe original nfs_acl.x file provided in the OpenSolaris code base did
-   not compile (usig the widely-available rpcgen tool).
+   The original nfs_acl.x file that appears in the OpenSolaris code base
+   did not compile using the widely-available rpcgen tool).
 
    *  The file does not include a definition of the ACL2_OK or ACL3_OK
       constants used in definitions of result unions.
@@ -2258,7 +2258,7 @@ A.3.  Code Compilation Requirements
       post_op_attr.
 
    The XDR specification provided in this document rectifies those
-   omisiions to provide a complete and compilable XDR language
+   omissions to provide a complete and compilable XDR language
    description of the NFSACL protocol.
 
 Appendix B.  Open Questions
@@ -2266,13 +2266,11 @@ Appendix B.  Open Questions
    Should the CDDL .x file be explicitly cited, or otherwise referenced,
    in this document?
 
-   How should the XDR language copyright notice read?
-
 Acknowledgments
 
    The editor is grateful to Bill Baker, Wim Coekaerts, Andreas
-   Gruenbacher, Rick Macklem, Greg Marsden, and Martin Thomson for their
-   input and support.
+   Gruenbacher, Rick Macklem, Greg Marsden, Martin Thomson, and Jim
+   Wright for their input and support.
 
    Special thanks to Transport Area Directors Martin Duke and
    Zaheduzzaman Sarker, NFSV4 Working Group Chairs Chris Inacio and
