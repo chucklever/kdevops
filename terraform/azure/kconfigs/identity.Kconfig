@@ -8,6 +8,49 @@ config TERRAFORM_AZURE_SUBSCRIPTION_ID
 
 	  https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id
 
+choice
+	prompt "Azure authentication method"
+	default TERRAFORM_AZURE_AUTH_METHOD_CERTIFICATE
+	help
+	  Select the mechanism that kdevops terraform uses to
+	  authenticate to the Azure resource manager.
+
+config TERRAFORM_AZURE_AUTH_METHOD_CERTIFICATE
+	bool "Service certificate"
+	help
+	  Use an x.509 certificate for authentication. Set the
+	  authentication parameters using Kconfig options.
+
+	  For details on how to create and use a service certificate, see:
+
+	  https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-3
+
+config TERRAFORM_AZURE_AUTH_METHOD_ENVIRONMENT
+	bool "Client secret"
+	help
+	  When this option is selected, set your Azure service
+	  principal via shell environment variables:
+
+	  export ARM_TENANT_ID="<azure_subscription_tenant_id>"
+	  export ARM_CLIENT_ID="<service_principal_appid>"
+	  export ARM_SECRET="<service_principal_password>"
+
+	  No additional local configuration is necessary.
+
+	  For details on how to create and use this style of service
+	  principal, see:
+
+	  https://learn.microsoft.com/en-us/azure/developer/terraform/authenticate-to-azure-with-service-principle?tabs=bash
+
+endchoice
+
+if TERRAFORM_AZURE_AUTH_METHOD_CERTIFICATE
+
+config TERRAFORM_AZURE_USE_SERVICE_CERTIFICATE
+	bool
+	output yaml
+	default y
+
 config TERRAFORM_AZURE_TENANT_ID
 	string "Azure tenant ID"
 	output yaml
@@ -45,3 +88,5 @@ config TERRAFORM_AZURE_CLIENT_CERT_PASSWD
 	output yaml
 	help
 	  The password for the service principal PFX certificate file.
+
+endif # TERRAFORM_AZURE_AUTH_METHOD_CERTIFICATE

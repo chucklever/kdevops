@@ -1,19 +1,19 @@
 variable "azure_application_id" {
   description = "Your application ID"
   type        = string
-  default     = "invalid"
+  default     = null
 }
 
 variable "azure_client_certificate_password" {
   description = "The password to the service principal PFX certificate file"
   type        = string
-  default     = "invalid"
+  default     = null
 }
 
 variable "azure_client_certificate_path" {
   description = "Path to the service principal PFX certificate file"
   type        = string
-  default     = "invalid"
+  default     = null
 }
 
 variable "azure_subscription_id" {
@@ -25,7 +25,7 @@ variable "azure_subscription_id" {
 variable "azure_tenant_id" {
   description = "Your Azure tenant ID"
   type        = string
-  default     = "invalid"
+  default     = null
 }
 
 variable "resource_location" {
