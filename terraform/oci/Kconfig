@@ -49,15 +49,70 @@ config TERRAFORM_OCI_COMPARTMENT_OCID
 	  Read this:
 	  https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/terraformproviderconfiguration.htm
 
-config TERRAFORM_OCI_SHAPE
-	string "OCI shape name"
+choice
+	prompt "OCI shape"
+	default TERRAFORM_OCI_SHAPE_VM_STANDARD3_FLEX
 	help
-	  The name of the shape
-	  Read this:
+	  This option selects the class of virtual hardware (CPUs and
+	  memory) to provision for each target node. Most CPU
+	  architectures, including x86, run two threads per physical
+	  core, so one OCPU is the equal of two vCPUs for x86-based
+	  compute.
+
+	  Note that your subscription might limit which shapes are
+	  available for you to use.
+
+	  More information is available here:
+
 	  https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/terraformproviderconfiguration.htm
 
+config TERRAFORM_OCI_SHAPE_VM_STANDARD3_FLEX
+	bool "VM.Standard3.Flex"
+	depends on TARGET_ARCH_X86_64
+	help
+	  Selecting this option provisions each guest with between 1
+	  and 32 OCPUs (physical cores) and up to 512MB of memory.
+
+config TERRAFORM_OCI_SHAPE_VM_STANDARD_E4_FLEX
+	bool "VM.Standard.E4.Flex"
+	depends on TARGET_ARCH_X86_64
+	help
+	  Selecting this option provisions each guest with between 1
+	  and 114 OCPUs (physical AMD cores) and up to 1760MB of memory.
+
+config TERRAFORM_OCI_SHAPE_VM_STANDARD_E5_FLEX
+	bool "VM.Standard.E5.Flex"
+	depends on TARGET_ARCH_X86_64
+	help
+	  Selecting this option provisions each guest with between 1
+	  and 94 OCPUs (physical AMD cores) and up to 1048MB of memory.
+
+config TERRAFORM_OCI_SHAPE_VM_STANDARD_A1_FLEX
+	bool "VM.Standard.A1.Flex"
+	depends on TARGET_ARCH_ARM64
+	help
+	  Selecting this option provisions each guest with between 1
+	  and 80 OCPUs (physical ARM cores) and up to 512MB of memory.
+
+config TERRAFORM_OCI_SHAPE_VM_STANDARD_A2_FLEX
+	bool "VM.Standard.A2.Flex"
+	depends on TARGET_ARCH_ARM64
+	help
+	  Selecting this option provisions each guest with between 1
+	  and 78 OCPUs (physical ARM cores) and up to 946MB of memory.
+
+endchoice
+
+config TERRAFORM_OCI_SHAPE
+	string
+	default "VM.Standard3.Flex" if TERRAFORM_OCI_SHAPE_VM_STANDARD3_FLEX
+	default "VM.Standard.E4.Flex" if TERRAFORM_OCI_SHAPE_VM_STANDARD_E4_FLEX
+	default "VM.Standard.E5.Flex" if TERRAFORM_OCI_SHAPE_VM_STANDARD_E5_FLEX
+	default "VM.Standard.A1.Flex" if TERRAFORM_OCI_SHAPE_VM_STANDARD_A1_FLEX
+	default "VM.Standard.A2.Flex" if TERRAFORM_OCI_SHAPE_VM_STANDARD_A2_FLEX
+
 config TERRAFORM_OCI_INSTANCE_FLEX_OCPUS
-	int "Number of flexiable instance OCPUs"
+	int "Number of flexible instance OCPUs"
 	default 2
 	help
 	  The number of OCPUs to use per flexible instance.
