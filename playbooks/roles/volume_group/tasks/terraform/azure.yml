@@ -1,0 +1,40 @@
+---
+#
+# To guarantee idempotency, these steps have to generate the exact
+# same physical_volumes list every time they are run.
+#
+# Skip the block device on which the root and temporary file systems
+# reside. These devices reside under /dev/disk/cloud/
+#
+# Also skip the device to be used for the /data file system.
+#
+
+- name: Detect the root device
+  ansible.builtin.stat:
+    path: "/dev/disk/cloud/azure_root"
+  register: stat_output
+
+- name: Save the name of the root device
+  ansible.builtin.set_fact:
+    root_device: "{{ stat_output.stat.lnk_source.split('/dev/').1 }}"
+
+- name: Detect the temporary device
+  ansible.builtin.stat:
+    path: "/dev/disk/cloud/azure_resource"
+  register: stat_output
+
+- name: Save the name of the temporary device
+  ansible.builtin.set_fact:
+    tmp_device: "{{ stat_output.stat.lnk_source.split('/dev/').1 }}"
+
+- name: Add unused extra managed disks to the volume list
+  ansible.builtin.set_fact:
+    physical_volumes: "{{ physical_volumes + ['/dev/' + item.key] }}"
+  when:
+    - item.value.model == "Virtual Disk"
+    - root_device != item.key
+    - tmp_device != item.key
+    - data_device != "/dev/" + item.key
+  loop_control:
+    label: "Adding block device: /dev/{{ item.key }}"
+  with_dict: "{{ ansible_devices }}"
