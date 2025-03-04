@@ -1,3 +1,4 @@
 ---
 physical_volumes: []
 kdevops_enable_guestfs: false
+kdevops_enable_terraform: false
