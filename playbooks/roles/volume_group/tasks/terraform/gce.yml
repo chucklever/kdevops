@@ -1,0 +1,4 @@
+---
+- name: Google Compute Engine
+  ansible.builtin.fail:
+    msg: Support for Google Compute Engine has not yet been implemented
