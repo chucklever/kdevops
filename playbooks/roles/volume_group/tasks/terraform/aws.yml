@@ -1,0 +1,54 @@
+---
+#
+# To guarantee idempotency, these steps have to generate the exact
+# same physical_volumes list every time they are run.
+#
+# Skip the block device on which the root filesystem resides, and
+# skip the device that is to be used for /data.
+#
+# On AWS, normally the root device is /dev/nvme0n1 and the data
+# device is /dev/nvme1n1. However, this is not always the case:
+# block volumes can be attached to an instance in any order, thus
+# may appear as any device named /dev/nvmeNn1.
+#
+# So, extract the block device names, which should remain fixed for
+# the lifetime of the instance and its block devices. Use these to
+# avoid using the root and data devices as LVM physical volumes.
+#
+
+- name: Gather AWS instance information about the target node
+  delegate_to: localhost
+  amazon.aws.ec2_instance_info:
+    region: "{{ terraform_aws_region }}"
+    filters:
+      "tag:Name": "{{ inventory_hostname }}"
+      instance-state-name: ["running"]
+  register: instance_info
+
+# bdm is a list of dictionaries -- one dictionary per block device
+- name: Extract the block device mappings dictionary
+  ansible.builtin.set_fact:
+    bdm: "{{ instance_info.instances[0].block_device_mappings }}"
+
+- name: Discover the root device
+  ansible.builtin.set_fact:
+    root_ebs_volume: "{{ bdm | selectattr('device_name', 'match', '/dev/sda1') | first }}"
+
+# FIXME: Stuff "/dev/sdf" into the data_device variable for AWS
+- name: Discover the data device
+  ansible.builtin.set_fact:
+    data_ebs_volume: "{{ bdm | selectattr('device_name', 'match', '/dev/sdf') | first }}"
+
+- name: Add unused EBS volumes to the volume list
+  vars:
+    root_volume_id: "{{ root_ebs_volume.ebs.volume_id | string | regex_replace('-', '') }}"
+    data_volume_id: "{{ data_ebs_volume.ebs.volume_id | string | regex_replace('-', '') }}"
+  ansible.builtin.set_fact:
+    physical_volumes: "{{ physical_volumes + ['/dev/' + item.key] }}"
+  when:
+    - item.value.model == "Amazon Elastic Block Store"
+    - item.value.serial != root_volume_id
+    - item.value.serial != data_volume_id
+  loop_control:
+    label: "Adding block device: /dev/{{ item.key }}"
+  with_dict: "{{ ansible_devices }}"
