@@ -3,12 +3,9 @@ variable "aws_region" {
   type        = string
 }
 
-# I got mine by an error output after using the same region as above
-# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html
-# https://gist.github.com/neilstuartcraig/0ccefcf0887f29b7f240
-variable "aws_availability_region" {
-  description = "Your preferred AWS region"
-  default     = "us-west-1b"
+variable "aws_availability_zone" {
+  description = "Your preferred AWS availability zone"
+  type        = string
 }
 
 variable "ssh_keyname" {
