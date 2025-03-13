@@ -4,6 +4,43 @@
   when:
     - infer_uid_and_group|bool
 
+- name: Establish the fixed device name of the data device
+  tags: [ 'data_partition' ]
+  when:
+    - kdevops_enable_terraform|bool
+    - kdevops_terraform_provider == "aws"
+  block:
+    - name: Gather AWS instance information about the target node
+      delegate_to: localhost
+      amazon.aws.ec2_instance_info:
+        region: "{{ terraform_aws_region }}"
+        filters:
+          "tag:Name": "{{ inventory_hostname }}"
+          instance-state-name: ["running"]
+      register: instance_info
+
+    - name: Extract the block device mappings dictionary
+      ansible.builtin.set_fact:
+        bdm: "{{ instance_info.instances[0].block_device_mappings }}"
+
+    # FIXME: Stuff "/dev/sdf" into the data_device variable for AWS
+    - name: Discover the data device
+      ansible.builtin.set_fact:
+        data_ebs_volume: "{{ bdm | selectattr('device_name', 'match', '/dev/sdf') | first }}"
+
+    # This replaces the value of data_device only in the scope of this role
+    - name: Add unused EBS volumes to the volume list
+      vars:
+        data_volume_id: "{{ data_ebs_volume.ebs.volume_id | string | regex_replace('-', '') }}"
+      ansible.builtin.set_fact:
+        data_device: "{{ '/dev/' + item.key }}"
+      when:
+        - item.value.model == "Amazon Elastic Block Store"
+        - item.value.serial == data_volume_id
+      loop_control:
+        label: "Adding block device: /dev/{{ item.key }}"
+      with_dict: "{{ ansible_devices }}"
+
 - name: Create {{ data_path }} partition if not created yet
   include_role:
     name: create_partition
