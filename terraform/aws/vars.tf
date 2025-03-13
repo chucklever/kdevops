@@ -1,8 +1,6 @@
-# This is for North california, if you want another one:
-# https://docs.aws.amazon.com/general/latest/gr/rande.html
 variable "aws_region" {
   description = "Your preferred AWS region"
-  default     = "us-west-1"
+  type        = string
 }
 
 # I got mine by an error output after using the same region as above
