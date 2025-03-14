@@ -52,6 +52,12 @@ variable "azure_managed_disks_per_instance" {
   default     = 0
 }
 
+variable "azure_managed_disks_size" {
+  description = "Size of each managed disk, in gibibytes"
+  type        = number
+  default     = 0
+}
+
 variable "azure_subscription_id" {
   description = "Your Azure subscription ID"
   type        = string
@@ -68,10 +74,4 @@ variable "azure_vmsize" {
   description = "VM size"
   type        = string
   default     = "invalid"
-}
-
-variable "managed_disks_size" {
-  description = "Size of each managed disk, in gibibytes"
-  type        = number
-  default     = 0
 }
