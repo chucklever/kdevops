@@ -9,17 +9,8 @@ endmenu
 menu "Compute"
 source "terraform/gce/kconfigs/compute.Kconfig"
 endmenu
-
-config TERRAFORM_GCE_SCRATCH_DISK_INTERFACE
-	string "GCE scratch disk interface to use"
-	default "NVME"
-	help
-	  This option will set GCE scratch disk interface.
-
-	  Documentation: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#scratch_disk
-
-config TERRAFORM_GCE_DATA_VOLUME_DEVICE_FILE_NAME
-	string
-	default "/dev/nvme0n1"
+menu "Storage"
+source "terraform/gce/kconfigs/storage.Kconfig"
+endmenu
 
 endif # TERRAFORM_GCE
