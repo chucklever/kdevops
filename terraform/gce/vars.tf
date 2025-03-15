@@ -10,6 +10,12 @@ variable "gce_image_type" {
   default     = "invalid"
 }
 
+variable "gce_image_project" {
+  description = "Name of Linux distribution"
+  type        = string
+  default     = "invalid"
+}
+
 variable "gce_machine_type" {
   description = "Machine type"
   type        = string
@@ -34,9 +40,15 @@ variable "gce_zone" {
   default     = "invalid"
 }
 
-variable "image_name" {
-  description = "Name of image to use"
-  default     = "debian-cloud/debian-10"
+variable "gce_image_family" {
+  description = "Release of Linux distribution"
+  default     = "invalid"
+}
+
+variable "gce_image_size" {
+  description = "Size of image, in GiB"
+  type        = number
+  default     = 0
 }
 
 variable "scratch_disk_interface" {
