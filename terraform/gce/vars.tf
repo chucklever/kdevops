@@ -1,11 +1,13 @@
-variable "project" {
-  description = "Your project name"
-  default     = "some-rando-project"
+variable "gce_credentials_file" {
+  description = "Path to the your service account JSON credentials file"
+  type        = string
+  default     = "invalid"
 }
 
-variable "credentials" {
-  description = "Path to the your service account json credentials file"
-  default     = "account.json"
+variable "gce_project" {
+  description = "Your project name"
+  type        = string
+  default     = "invalid"
 }
 
 # https://cloud.google.com/compute/docs/regions-zones/
