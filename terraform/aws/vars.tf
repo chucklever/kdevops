@@ -139,6 +139,6 @@ variable "aws_shared_credentials_file" {
 }
 
 variable "aws_profile" {
-  description = "Shared aws credentials file"
-  default     = "default"
+  description = "AWS user profile"
+  type        = string
 }
