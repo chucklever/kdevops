@@ -5,6 +5,9 @@ choice
 	  This option sets the GCE geographic region. For more examples:
 	  https://cloud.google.com/compute/docs/regions-zones/
 
+config TERRAFORM_GCE_REGION_US_EAST1
+	bool "us-east1"
+
 config TERRAFORM_GCE_REGION_US_EAST4
 	bool "us-east4"
 
@@ -22,11 +25,13 @@ endchoice
 config TERRAFORM_GCE_REGION
 	string
 	output yaml
+	default "us-east1" if TERRAFORM_GCE_REGION_US_EAST1
 	default "us-east4" if TERRAFORM_GCE_REGION_US_EAST4
 	default "us-central1" if TERRAFORM_GCE_REGION_US_CENTRAL1
 	default "us-west1" if TERRAFORM_GCE_REGION_US_WEST1
 	default "us-west2" if TERRAFORM_GCE_REGION_US_WEST2
 
+source "terraform/gce/kconfigs/zones/us-east1.Kconfig"
 source "terraform/gce/kconfigs/zones/us-east4.Kconfig"
 source "terraform/gce/kconfigs/zones/us-central1.Kconfig"
 source "terraform/gce/kconfigs/zones/us-west1.Kconfig"
