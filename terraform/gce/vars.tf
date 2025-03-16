@@ -10,11 +10,16 @@ variable "gce_project" {
   default     = "invalid"
 }
 
-# https://cloud.google.com/compute/docs/regions-zones/
-# This is LA, California
-variable "region" {
-  description = "Region location"
-  default     = "us-west2-c"
+variable "gce_region" {
+  description = "Geographic Region"
+  type        = string
+  default     = "invalid"
+}
+
+variable "gce_zone" {
+  description = "Availability zone"
+  type        = string
+  default     = "invalid"
 }
 
 # https://cloud.google.com/compute/docs/machine-types
