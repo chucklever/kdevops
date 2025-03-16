@@ -3,26 +3,9 @@ if TERRAFORM_GCE
 menu "Identity & Access"
 source "terraform/gce/kconfigs/identity.Kconfig"
 endmenu
-
-config TERRAFORM_GCE_REGION
-	string "GCE region"
-	output yaml
-	default "us-west2"
-	help
-	  This option sets the GCE geographic region. For more examples:
-	  https://cloud.google.com/compute/docs/regions-zones/
-
-config TERRAFORM_GCE_ZONE
-	string "GCE zone"
-	output yaml
-	default "us-west2-c"
-	help
-	  This option sets the GCE availability zone. For more
-	  examples:
-
-	  https://cloud.google.com/compute/docs/regions-zones/
-
-	  Documentation: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#zone
+menu "Resource Location"
+source "terraform/gce/kconfigs/location.Kconfig"
+endmenu
 
 choice
 	prompt "Choose GCE Machine type"
