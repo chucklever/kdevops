@@ -1,0 +1,32 @@
+if TERRAFORM_GCE_REGION_US_WEST2
+
+choice
+	prompt "GCE zone"
+	default TERRAFORM_GCE_ZONE_US_WEST2_C
+	help
+	  This option sets the GCE availability zone. For more
+	  examples:
+
+	  https://cloud.google.com/compute/docs/regions-zones/
+
+	  Documentation: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#zone
+
+config TERRAFORM_GCE_ZONE_US_WEST2_A
+	bool "us-west2-a"
+
+config TERRAFORM_GCE_ZONE_US_WEST2_B
+	bool "us-west2-b"
+
+config TERRAFORM_GCE_ZONE_US_WEST2_C
+	bool "us-west2-c"
+
+endchoice
+
+config TERRAFORM_GCE_ZONE
+	string
+	output yaml
+	default "us-west2-a" if TERRAFORM_GCE_ZONE_US_WEST2_A
+	default "us-west2-b" if TERRAFORM_GCE_ZONE_US_WEST2_B
+	default "us-west2-c" if TERRAFORM_GCE_ZONE_US_WEST2_C
+
+endif # TERRAFORM_GCE_REGION_US_WEST2
