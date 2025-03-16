@@ -23,11 +23,18 @@ config TERRAFORM_GCE_MACHINE_FAMILY_N2D_HIGHCPU
 	help
 	  General purpose computing on AMD Milan CPUs.
 
+config TERRAFORM_GCE_MACHINE_FAMILY_N4_HIGHCPU
+	bool "N4 High CPU family"
+	depends on TARGET_ARCH_X86_64
+	help
+	  General purpose computing on Intel Emerald Rapids CPUs.
+
 endchoice
 
 source "terraform/gce/kconfigs/machines/n1-standard.Kconfig"
 source "terraform/gce/kconfigs/machines/n2-highcpu.Kconfig"
 source "terraform/gce/kconfigs/machines/n2d-highcpu.Kconfig"
+source "terraform/gce/kconfigs/machines/n4-highcpu.Kconfig"
 
 config TERRAFORM_GCE_IMAGE
 	string "GCE image to use"
