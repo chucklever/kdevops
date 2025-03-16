@@ -61,6 +61,9 @@ config TERRAFORM_GCE_DISTRO_RHEL
 config TERRAFORM_GCE_DISTRO_ROCKY
 	bool "Rocky Linux"
 
+config TERRAFORM_GCE_DISTRO_SLES
+	bool "SUSE Enterprise Linux Server"
+
 endchoice
 
 source "terraform/gce/kconfigs/images/centos.Kconfig"
@@ -69,3 +72,4 @@ source "terraform/gce/kconfigs/images/fedora.Kconfig"
 source "terraform/gce/kconfigs/images/opensuse.Kconfig"
 source "terraform/gce/kconfigs/images/rhel.Kconfig"
 source "terraform/gce/kconfigs/images/rocky.Kconfig"
+source "terraform/gce/kconfigs/images/sles.Kconfig"
