@@ -4,6 +4,12 @@ variable "gce_credentials_file" {
   default     = "invalid"
 }
 
+variable "gce_machine_type" {
+  description = "Machine type"
+  type        = string
+  default     = "invalid"
+}
+
 variable "gce_project" {
   description = "Your project name"
   type        = string
@@ -20,12 +26,6 @@ variable "gce_zone" {
   description = "Availability zone"
   type        = string
   default     = "invalid"
-}
-
-# https://cloud.google.com/compute/docs/machine-types
-variable "machine_type" {
-  description = "Machine type"
-  default     = "n1-standard-1"
 }
 
 variable "image_name" {
