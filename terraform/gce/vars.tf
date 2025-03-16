@@ -4,6 +4,36 @@ variable "gce_credentials_file" {
   default     = "invalid"
 }
 
+variable "gce_disk_count" {
+  description = "Count of attached disks per instance"
+  type        = number
+  default     = 0
+}
+
+variable "gce_disk_iops" {
+  description = "Provisioned IOPS for each attached disk"
+  type        = number
+  default     = null
+}
+
+variable "gce_disk_size" {
+  description = "Size of each attached disk, in GB"
+  type        = number
+  default     = 0
+}
+
+variable "gce_disk_throughput" {
+  description = "Provisioned throughput for each attached disk"
+  type        = number
+  default     = null
+}
+
+variable "gce_disk_type" {
+  description = "Performance class of attached disks"
+  type        = string
+  default     = "invalid"
+}
+
 variable "gce_image_type" {
   description = "Type of image disk"
   type        = string
@@ -49,9 +79,4 @@ variable "gce_image_size" {
   description = "Size of image, in GiB"
   type        = number
   default     = 0
-}
-
-variable "scratch_disk_interface" {
-  description = "The type of interface for the scratch disk, SCSI, or NVME"
-  default     = "NVME"
 }

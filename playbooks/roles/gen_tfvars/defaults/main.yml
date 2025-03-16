@@ -47,6 +47,8 @@ terraform_gce_region: "invalid"
 terraform_gce_machine_type: "invalid"
 terraform_gce_scatch_disk_type: "invalid"
 terraform_gce_image_name: "invalid"
+terraform_gce_disk_needs_iops: false
+terraform_gce_disk_needs_throughput: false
 
 terraform_oci_region: "invalid"
 terraform_oci_tenancy_ocid: "invalid"
