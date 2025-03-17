@@ -4,6 +4,12 @@ variable "gce_credentials_file" {
   default     = "invalid"
 }
 
+variable "gce_image_type" {
+  description = "Type of image disk"
+  type        = string
+  default     = "invalid"
+}
+
 variable "gce_machine_type" {
   description = "Machine type"
   type        = string
