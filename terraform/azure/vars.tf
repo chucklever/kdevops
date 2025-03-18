@@ -58,6 +58,12 @@ variable "azure_managed_disks_size" {
   default     = 0
 }
 
+variable "azure_managed_disks_tier" {
+  description = "Performance tier of managed disks"
+  type        = string
+  default     = "invalid"
+}
+
 variable "azure_subscription_id" {
   description = "Your Azure subscription ID"
   type        = string
