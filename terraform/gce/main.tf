@@ -3,6 +3,28 @@ data "google_compute_image" "kdevops_image" {
   family  = var.gce_image_family
 }
 
+resource "google_compute_network" "kdevops_network" {
+  auto_create_subnetworks      = false
+  bgp_best_path_selection_mode = "STANDARD"
+  mtu                          = 1500
+  name                         = "kdevops-vpc"
+  routing_mode                 = "REGIONAL"
+}
+
+resource "google_compute_subnetwork" "kdevops_subnetwork" {
+  ip_cidr_range = "10.0.0.0/24"
+  name          = "kdevops-subnet"
+  network       = google_compute_network.kdevops_network.id
+  region        = var.gce_region
+}
+
+resource "google_compute_network_attachment" "kdevops_network_attachment" {
+  connection_preference = "ACCEPT_AUTOMATIC"
+  name                  = "kdevops-net-attachment"
+  region                = var.gce_region
+  subnetworks           = [google_compute_subnetwork.kdevops_subnetwork.id]
+}
+
 resource "google_compute_instance" "kdevops_instance" {
   count        = local.kdevops_num_boxes
   name         = element(var.kdevops_nodes, count.index)
@@ -25,6 +47,10 @@ resource "google_compute_instance" "kdevops_instance" {
     # Ephemeral IP
     access_config {
     }
+  }
+
+  network_interface {
+    network_attachment = google_compute_network_attachment.kdevops_network_attachment.self_link
   }
 
   lifecycle {
