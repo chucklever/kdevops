@@ -16,6 +16,12 @@ variable "azure_client_certificate_path" {
   default     = null
 }
 
+variable "azure_image_offer" {
+  description = "OS image offer"
+  type        = string
+  default     = "invalid"
+}
+
 variable "azure_image_publisher" {
   description = "OS image publisher"
   type        = string
@@ -44,11 +50,6 @@ variable "azure_vmsize" {
   description = "VM size"
   type        = string
   default     = "invalid"
-}
-
-variable "image_offer" {
-  description = "Storage image offer"
-  default     = "debian-10"
 }
 
 variable "image_sku" {
