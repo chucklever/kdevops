@@ -22,7 +22,7 @@ config TERRAFORM_AZURE_APPLICATION_ID
 
 config TERRAFORM_AZURE_CLIENT_CERT_PATH
 	string "Azure client certificate path"
-	default "./service-principal.pfx"
+	output yaml
 	help
 	  Path to the service principal PFX file for this application. For
 	  details on how to create this and associate it with your account
