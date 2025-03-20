@@ -16,6 +16,12 @@ variable "azure_client_certificate_path" {
   default     = null
 }
 
+variable "azure_location" {
+  description = "Azure resource location"
+  type        = string
+  default     = "invalid"
+}
+
 variable "azure_subscription_id" {
   description = "Your Azure subscription ID"
   type        = string
@@ -26,11 +32,6 @@ variable "azure_tenant_id" {
   description = "Your Azure tenant ID"
   type        = string
   default     = null
-}
-
-variable "resource_location" {
-  description = "Resource location"
-  default     = "westus"
 }
 
 variable "vmsize" {
