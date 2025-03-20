@@ -14,9 +14,9 @@ terraform {
 provider "azurerm" {
   features {}
 
-  client_id                   = var.application_id
   client_certificate_path     = var.client_certificate_path
   client_certificate_password = var.client_certificate_password
+  client_id                   = var.azure_application_id
   subscription_id             = var.azure_subscription_id
   tenant_id                   = var.azure_tenant_id
 }

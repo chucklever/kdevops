@@ -14,6 +14,12 @@ config TERRAFORM_AZURE_TENANT_ID
 	help
 	  The tenant ID to use.
 
+config TERRAFORM_AZURE_APPLICATION_ID
+	string "Azure client application ID"
+	output yaml
+	help
+	  The application ID to use.
+
 config TERRAFORM_AZURE_CLIENT_CERT_PATH
 	string "Azure client certificate path"
 	default "./service-principal.pfx"
@@ -39,9 +45,3 @@ config TERRAFORM_AZURE_CLIENT_CERT_PASSWD
 	default "some-password"
 	help
 	  The password to the service principal PFX file.
-
-config TERRAFORM_AZURE_APPLICATION_ID
-	string "Azure client application ID"
-	default "someGUID"
-	help
-	  The application ID to use.
