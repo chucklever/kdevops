@@ -1,3 +1,9 @@
+variable "azure_subscription_id" {
+  description = "Your Azure subscription ID"
+  type        = string
+  default     = "invalid"
+}
+
 variable "client_certificate_path" {
   description = "Path to the service principal PFX file for this application"
   default     = "./service-principal.pfx"
@@ -10,11 +16,6 @@ variable "client_certificate_password" {
 
 variable "application_id" {
   description = "The application ID"
-  default     = "anotherGUID"
-}
-
-variable "subscription_id" {
-  description = "Your subscription ID"
   default     = "anotherGUID"
 }
 

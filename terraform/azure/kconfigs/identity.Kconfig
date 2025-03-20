@@ -1,3 +1,13 @@
+config TERRAFORM_AZURE_SUBSCRIPTION_ID
+	string "Azure subscription ID"
+	output yaml
+	help
+	  This option specifies the Azure subscription ID to use.
+	  Retrieve your subscription ID by following these
+	  instructions:
+
+	  https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id
+
 config TERRAFORM_AZURE_CLIENT_CERT_PATH
 	string "Azure client certificate path"
 	default "./service-principal.pfx"
@@ -23,12 +33,6 @@ config TERRAFORM_AZURE_CLIENT_CERT_PASSWD
 	default "some-password"
 	help
 	  The password to the service principal PFX file.
-
-config TERRAFORM_AZURE_SUBSCRIPTION_ID
-	string "Azure subscription ID"
-	default "anotherGUID"
-	help
-	  The subscription ID to use.
 
 config TERRAFORM_AZURE_TENANT_ID
 	string "Azure tenant ID"

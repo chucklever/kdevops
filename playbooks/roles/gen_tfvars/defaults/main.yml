@@ -29,6 +29,7 @@ terraform_aws_ebs_num_volumes_per_instance: 0
 terraform_aws_ebs_volume_size: 0
 terraform_aws_ebs_volume_type: "invalid"
 
+terraform_azure_subscription_id: "invalid"
 terraform_azure_resource_location: "invalid"
 terraform_azure_vm_size: "invalid"
 terraform_azure_image_publisher: "invalid"
@@ -38,7 +39,6 @@ terraform_azure_image_version: "invalid"
 terraform_azure_client_cert_path: "invalid"
 terraform_azure_client_cert_passwd: "invalid"
 terraform_azure_application_id: "invalid"
-terraform_azure_subscription_id: "invalid"
 terraform_azure_tenant_id: "invalid"
 
 terraform_gce_project_name: "invalid"
