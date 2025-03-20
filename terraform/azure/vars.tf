@@ -34,6 +34,12 @@ variable "azure_image_sku" {
   default     = "invalid"
 }
 
+variable "azure_image_version" {
+  description = "OS image version"
+  type        = string
+  default     = "invalid"
+}
+
 variable "azure_location" {
   description = "Azure resource location"
   type        = string
@@ -56,11 +62,6 @@ variable "azure_vmsize" {
   description = "VM size"
   type        = string
   default     = "invalid"
-}
-
-variable "image_version" {
-  description = "Storage image version"
-  default     = "latest"
 }
 
 variable "managed_disks_per_instance" {
