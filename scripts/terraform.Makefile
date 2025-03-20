@@ -79,7 +79,6 @@ TERRAFORM_EXTRA_VARS += terraform_azure_image_offer=$(subst ",,$(CONFIG_TERRAFOR
 TERRAFORM_EXTRA_VARS += terraform_azure_image_sku=$(subst ",,$(CONFIG_TERRAFORM_AZURE_IMAGE_SKU))
 TERRAFORM_EXTRA_VARS += terraform_azure_image_version=$(subst ",,$(CONFIG_TERRAFORM_AZURE_IMAGE_VERSION))
 TERRAFORM_EXTRA_VARS += terraform_azure_client_cert_path=$(subst ",,$(CONFIG_TERRAFORM_AZURE_CLIENT_CERT_PATH))
-TERRAFORM_EXTRA_VARS += terraform_azure_client_cert_passwd=$(subst ",,$(CONFIG_TERRAFORM_AZURE_CLIENT_CERT_PASSWD))
 endif
 
 ifeq (y,$(CONFIG_TERRAFORM_GCE))
