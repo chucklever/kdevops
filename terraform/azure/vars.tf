@@ -16,6 +16,12 @@ variable "azure_client_certificate_path" {
   default     = null
 }
 
+variable "azure_image_publisher" {
+  description = "OS image publisher"
+  type        = string
+  default     = "invalid"
+}
+
 variable "azure_location" {
   description = "Azure resource location"
   type        = string
@@ -38,11 +44,6 @@ variable "azure_vmsize" {
   description = "VM size"
   type        = string
   default     = "invalid"
-}
-
-variable "image_publisher" {
-  description = "Storage image publisher"
-  default     = "Debian"
 }
 
 variable "image_offer" {
