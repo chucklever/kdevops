@@ -34,9 +34,10 @@ variable "azure_tenant_id" {
   default     = null
 }
 
-variable "vmsize" {
+variable "azure_vmsize" {
   description = "VM size"
-  default     = "Standard_DS3_v2"
+  type        = string
+  default     = "invalid"
 }
 
 variable "image_publisher" {
