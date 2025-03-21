@@ -19,7 +19,6 @@ terraform_private_net_mask: 0
 
 terraform_aws_ami_owner: "invalid"
 terraform_aws_ns: "invalid"
-terraform_aws_instance_type: "invalid"
 terraform_aws_enable_ebs: False
 terraform_aws_ebs_num_volumes_per_instance: 0
 terraform_aws_ebs_volume_size: 0
