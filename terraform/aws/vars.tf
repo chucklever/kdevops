@@ -20,25 +20,9 @@ variable "ssh_pubkey_data" {
   default = ""
 }
 
-# AMI updates for debian:
-# https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
-#
-# If you want to choose another distro:
-# https://letslearndevops.com/2018/08/23/terraform-get-latest-centos-ami/
-# To get filter values you can first setup aws cli:
-# https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html#cli-quick-configuration
-# Get your image ami id, for debian 9 amd64 on the us-west1 this is
-# ami-0adbaf2e0ce044437 so you can run:
-#
-# aws ec2 describe-images --image-ids ami-0adbaf2e0ce044437
-# For details:
-#
-# https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-images.html
-#
-# Using this filter glob lets us get the latest ami for this owner / release.
 variable "aws_name_search" {
   description = "Your AWS AMI search name filter"
-  default     = "debian-stretch-hvm-x86_64-*"
+  type        = string
 }
 
 variable "aws_ami_owner" {
