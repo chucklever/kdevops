@@ -124,8 +124,17 @@ variable "user_data_admin_enable_host_file" {
   default     = "yes"
 }
 
+# So far there hasn't been a need to configure this value
+variable "aws_shared_config_file" {
+  description = "Shared AWS configuration file"
+  type        = string
+  default     = "~/.aws/conf"
+}
+
+# So far there hasn't been a need to configure this value
 variable "aws_shared_credentials_file" {
-  description = "Shared aws credentials file"
+  description = "Shared AWS credentials file"
+  type        = string
   default     = "~/.aws/credentials"
 }
 
