@@ -41,12 +41,6 @@ variable "aws_name_search" {
   default     = "debian-stretch-hvm-x86_64-*"
 }
 
-# This has to match your preferred image filter above too.
-variable "aws_virt_type" {
-  description = "Your AWS preferred virtualization type"
-  default     = "hvm"
-}
-
 variable "aws_ami_owner" {
   description = "Your AWS AMI image owner"
 

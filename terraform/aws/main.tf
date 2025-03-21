@@ -9,7 +9,7 @@ data "aws_ami" "distro" {
 
   filter {
     name   = "virtualization-type"
-    values = [var.aws_virt_type]
+    values = ["hvm"]
   }
 
   owners = [var.aws_ami_owner]
