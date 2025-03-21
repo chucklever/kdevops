@@ -21,15 +21,13 @@ variable "ssh_pubkey_data" {
 }
 
 variable "aws_name_search" {
-  description = "Your AWS AMI search name filter"
+  description = "Your AWS AMI name search filter expression"
   type        = string
 }
 
 variable "aws_ami_owner" {
-  description = "Your AWS AMI image owner"
-
-  # Debian
-  default = "379101102735"
+  description = "An AWS AMI image owner or owner alias"
+  type        = string
 }
 
 variable "aws_instance_type" {
