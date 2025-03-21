@@ -19,7 +19,6 @@ terraform_private_net_mask: 0
 
 terraform_aws_enable_ebs: False
 terraform_aws_ebs_volume_size: 0
-terraform_aws_ebs_volume_type: "invalid"
 
 terraform_azure_resource_location: "invalid"
 terraform_azure_vm_size: "invalid"
