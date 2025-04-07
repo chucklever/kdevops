@@ -89,6 +89,7 @@ kdevops_workflows_dedicated_workflow: False
 kdevops_workflow_enable_fstests: False
 kdevops_workflow_enable_blktests: False
 
+builder_nodes: []
 iscsi_nodes: []
 
 is_fstests: False
