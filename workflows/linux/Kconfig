@@ -36,6 +36,14 @@ config BOOTLINUX_PURE_IOMAP
 
 endif # HAVE_SUPPORTS_PURE_IOMAP
 
+config BOOTLINUX_BUILDER
+	bool "Provision a kernel builder instance"
+	output yaml
+	default n
+	help
+	  Enabling this option provisions a separate guest/instance
+	  for building the Linux kernel to test.
+
 config BOOTLINUX_9P
 	bool "Use 9p to build Linux"
 	depends on LIBVIRT && !GUESTFS_LACKS_9P
