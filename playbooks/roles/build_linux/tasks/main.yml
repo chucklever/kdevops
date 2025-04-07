@@ -1,0 +1,297 @@
+---
+- name: Include optional extra_vars
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  with_first_found:
+    - files:
+        - "../extra_vars.yml"
+        - "../extra_vars.yaml"
+        - "../extra_vars.json"
+      skip: true
+  failed_when: false
+
+- name: Debian-specific set up
+  ansible.builtin.import_tasks: install-deps/debian/main.yml
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Red Hat-specific set up
+  ansible.builtin.import_tasks: install-deps/redhat/main.yml
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Suse-specific set up
+  ansible.builtin.import_tasks: install-deps/suse/main.yml
+  when:
+    - ansible_os_family == "Suse"
+
+- name: Install b4
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.pip:
+    name:
+      - b4
+  when:
+    - target_linux_install_b4 is defined
+    - target_linux_install_b4
+    - ansible_os_family == "Debian"
+
+- name: Create the /data partition
+  ansible.builtin.include_role:
+    name: create_data_partition
+
+- name: Wipe the build directory
+  ansible.builtin.file:
+    path: "{{ target_linux_dir_path }}"
+    state: absent
+
+- name: Clone {{ target_linux_tree }}
+  ansible.builtin.git:
+    repo: "{{ target_linux_git }}"
+    dest: "{{ target_linux_dir_path }}"
+    update: true
+    depth: "{{ target_linux_shallow_depth }}"
+    version: "{{ target_linux_ref }}"
+  retries: 3
+  delay: 5
+  register: git_result
+  until: not git_result.failed
+
+- name: Copy the kernel delta to the builder
+  ansible.builtin.template:
+    src: "{{ target_linux_extra_patch }}"
+    dest: "{{ target_linux_dir_path }}/{{ target_linux_extra_patch }}"
+    owner: "{{ data_user }}"
+    group: "{{ data_group }}"
+    mode: "u=rw,g=r,o=r"
+  when:
+    - target_linux_extra_patch is defined
+
+- name: Apply the kernel delta on the builder
+  ansible.builtin.command:
+    cmd: "git am {{ target_linux_extra_patch }}"  # noqa: command-instead-of-module
+    chdir: "{{ target_linux_dir_path }}"
+  register: git_am
+  changed_when: not git_am.failed
+  when:
+    - target_linux_extra_patch is defined
+
+- name: Set git user name and email
+  ansible.builtin.shell: |
+    if ! $(git config --get user.email) ; then
+      git config --global user.email user@example.com
+    fi
+    if ! $(git config --get user.name) ; then
+      git config --global user.name user
+    fi
+  register: git_config
+  changed_when: not git_config.failed
+  when:
+    - target_linux_apply_patch_message_id is defined
+    - target_linux_apply_patch_message_id | length > 0
+    - bootlinux_b4_am_this_host|bool
+
+- name: Apply a message patch set
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      b4 am -o - {{ target_linux_apply_patch_message_id }} | git am
+    chdir: "{{ target_linux_dir_path }}"
+  register: b4_am
+  changed_when: not b4_am.failed
+  when:
+    - target_linux_apply_patch_message_id is defined
+    - target_linux_apply_patch_message_id | length > 0
+    - bootlinux_b4_am_this_host|bool
+
+- name: Set the pathname of the .config templates directory
+  ansible.builtin.set_fact:
+    template_path: "{{ topdir_path }}/playbooks/roles/bootlinux/templates"
+
+- name: Check whether config-kdevops exists
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ template_path }}/config-kdevops"
+  register: config_kdevops
+
+- name: Found config-kdevops, using it for template
+  ansible.builtin.set_fact:
+    linux_config: "config-kdevops"
+  when: config_kdevops.stat.exists
+
+- name: No config-kdevops, looking for {{ target_linux_config }}
+  ansible.builtin.set_fact:
+    linux_config: "{{ target_linux_config }}"
+  when: not config_kdevops.stat.exists
+
+- name: Check whether specific kernel config exists for {{ target_linux_ref }}
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ template_path }}/{{ target_linux_config }}"
+  register: kernel_config
+
+- name: Find all linux-next configs
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: "{{ template_path }}"
+    patterns: "config-next*"
+    file_type: file
+    recurse: false
+  register: found_configs
+  when:
+    - not config_kdevops.stat.exists
+    - not kernel_config.stat.exists
+
+- name: Extract the date from the filenames
+  ansible.builtin.set_fact:
+    configs_with_dates: "{{ configs_with_dates | default([]) + [{'file': item.path, 'date': (item.path | regex_search('config-next-(\\d{8})')).split('-')[-1]}] }}"
+  loop: "{{ found_configs.files }}"
+  no_log: true
+  when:
+    - not config_kdevops.stat.exists
+    - not kernel_config.stat.exists
+    - item.path is search('config-next-(\\d{8})')
+
+- name: Sort configs based on date extracted from filename
+  ansible.builtin.set_fact:
+    sorted_configs: "{{ configs_with_dates | selectattr('date', 'defined') | sort(attribute='date', reverse=True) | map(attribute='file') | list }}"
+  when:
+    - not config_kdevops.stat.exists
+    - not kernel_config.stat.exists
+    - configs_with_dates | length > 0
+
+- name: Set latest linux-next config
+  ansible.builtin.set_fact:
+    latest_linux_next_config: "{{ sorted_configs[0] }}"
+  when:
+    - not config_kdevops.stat.exists and not kernel_config.stat.exists
+    - sorted_configs | length > 0
+
+- name: Use the specific kernel config or fallback to the latest linux-next
+  ansible.builtin.set_fact:
+    linux_config: "{{ target_linux_config | default('') if kernel_config.stat.exists else (latest_linux_next_config | default('') | basename) }}"
+  when:
+    - not config_kdevops.stat.exists
+    - not kernel_config.stat.exists
+    - latest_linux_next_config is defined
+
+- name: Verify that the Linux configuration file exists
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ template_path }}/{{ linux_config }}"
+  register: config_stat
+  when: linux_config is defined
+
+- name: Fail if the configuration file does not exist
+  ansible.builtin.fail:
+    msg: "The configuration file {{ template_path }}/{{ linux_config }} does not exist."
+  when: not config_stat.stat.exists
+
+- name: Copy configuration for Linux {{ target_linux_tree }}
+  ansible.builtin.template:
+    src: "{{ template_path }}/{{ linux_config }}"
+    dest: "{{ target_linux_dir_path }}/.config"
+    owner: "{{ data_user }}"
+    group: "{{ data_group }}"
+    mode: "u=rw,g=r,o=r"
+
+- name: Set the kernel localversion
+  ansible.builtin.lineinfile:
+    path: "{{ target_linux_dir_path }}/localversion"
+    line: "{{ target_linux_localversion }}"
+    mode: "u=rw,g=r,o=r"
+    create: true
+  when:
+    - target_linux_localversion is defined and target_linux_localversion != ""
+
+- name: Configure Linux {{ target_linux_tree }}
+  community.general.make:
+    chdir: "{{ target_linux_dir_path }}"
+    target: "olddefconfig"
+
+- name: Build {{ target_linux_tree }}
+  community.general.make:
+    chdir: "{{ target_linux_dir_path }}"
+    target: "all"
+    jobs: "{{ ansible_processor_nproc }}"
+
+- name: Remove the artifacts directory
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ build_artifacts_dir }}"
+    state: absent
+
+- name: Create an empty artifacts directory
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ build_artifacts_dir }}"
+    state: directory
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: Build kernel .deb packages
+  when:
+    - ansible_os_family == "Debian"
+  block:
+    - name: Make the bindeb-pkg target
+      community.general.make:
+        chdir: "{{ target_linux_dir_path }}"
+        target: "bindeb-pkg"
+
+    - name: Find the build artifacts
+      ansible.builtin.find:
+        paths: "{{ target_linux_dir_path }}"
+        patterns: "*.deb"
+        file_type: file
+        recurse: true
+      register: found_debs
+
+    - name: Fetch the build artifacts to the control host
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ build_artifacts_dir }}"
+        flat: true
+      loop: "{{ found_debs.files }}"
+      loop_control:
+        label: "Fetching {{ item.path }}"
+
+- name: Build kernel .rpm packages
+  when:
+    - ansible_os_family == "RedHat"
+  block:
+    - name: Make the binrpm-pkg target
+      community.general.make:
+        chdir: "{{ target_linux_dir_path }}"
+        target: "binrpm-pkg"
+
+    - name: Find the build artifacts
+      ansible.builtin.find:
+        paths:
+          - "{{ target_linux_dir_path }}/rpmbuild/RPMS"
+          - "{{ ansible_env.HOME }}/rpmbuild/RPMS"
+        patterns: "*.rpm"
+        file_type: file
+        recurse: true
+      register: found_rpms
+
+    - name: Fetch the build artifacts to the control host
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ build_artifacts_dir }}"
+        flat: true
+      loop: "{{ found_rpms.files }}"
+      loop_control:
+        label: "Fetching {{ item.path }}"
+
+- name: Extract the release information of the built kernel
+  community.general.make:
+    chdir: "{{ target_linux_dir_path }}"
+    target: "kernelrelease"
+  register: kernelrelease
+
+- name: Store the kernel release information with the build artifacts
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: true
+    line: "{{ kernelrelease.stdout }}"
+    mode: "u=rw,g=r,o=r"
+    path: "{{ build_artifacts_dir }}/kernel.release"

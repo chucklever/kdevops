@@ -1,0 +1,38 @@
+# SPDX-License-Identifier copyleft-next-0.3.1
+---
+kdevops_bootlinux: false
+infer_uid_and_group: false
+
+data_path: "/data"
+data_user: "kdevops"
+data_group: "kdevops"
+data_device: "/dev/disk/by-id/nvme-QEMU_NVMe_Ctrl_kdevops0"
+data_fstype: "xfs"
+data_label: "data"
+data_fs_opts: "-L {{ disk_setup_label }}"
+
+target_linux_admin_name: "Hacker Amanda"
+target_linux_admin_email: "devnull@kernel.org"
+target_linux_git: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+target_linux_shallow_depth: 0
+target_linux_tree: "linux-stable"
+target_linux_dir_path: "{{ data_path }}/{{ target_linux_tree }}"
+kdevops_baseline_and_dev: false
+
+target_linux_ref: "v4.19.133"
+target_linux_delta_file:
+target_linux_config: "config-{{ target_linux_ref }}"
+make: "make"
+target_linux_make_cmd: "{{ make }} -j{{ ansible_processor_nproc }}"
+target_linux_make_install_cmd: "{{ target_linux_make_cmd }} modules_install install"
+
+build_artifacts_dir: "{{ topdir_path }}/workflows/linux/artifacts/"
+
+uninstall_kernel_enable: false
+
+bootlinux_b4_am_this_host: false
+
+kdevops_workflow_enable_cxl: false
+bootlinux_cxl_test: false
+
+bootlinux_tree_set_by_cli: false

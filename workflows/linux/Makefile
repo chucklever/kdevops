@@ -84,6 +84,7 @@ linux-help-menu:
 	@echo "linux-clone        - Only clones Linux"
 	@echo "linux-grub-setup   - Ensures the appropriate target kernel is set to boot"
 	@echo "linux-reboot       - Reboot guests"
+	@echo "linux-packages     - Clones, builds, and packages a Linux kernel"
 	@echo "uname              - Prints current running kernel"
 
 PHONY += linux-help-end
@@ -155,6 +156,12 @@ linux-reboot:
 	$(Q)ansible-playbook $(ANSIBLE_VERBOSE) -i \
 		$(KDEVOPS_HOSTFILE) $(KDEVOPS_PLAYBOOKS_DIR)/bootlinux.yml \
 		--extra-vars="$(BOOTLINUX_ARGS)" $(LIMIT_HOSTS) --tags vars,reboot
+
+PHONY += linux-packages
+linux-packages:
+	$(Q)ansible-playbook $(ANSIBLE_VERBOSE) -i $(KDEVOPS_HOSTFILE) \
+		$(KDEVOPS_PLAYBOOKS_DIR)/build_linux.yml \
+		--extra-vars="$(BOOTLINUX_ARGS)" $(LIMIT_HOSTS)
 
 PHONY += uname
 uname:
