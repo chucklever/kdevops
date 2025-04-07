@@ -1,0 +1,86 @@
+---
+- name: Enable installation of packages from EPEL
+  ansible.builtin.include_role:
+    name: epel-release
+  when:
+    - ansible_distribution != "Fedora"
+
+- name: Install packages for building the Linux kernel
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 5
+  register: result
+  until: result is succeeded
+  vars:
+    packages:
+      - bison
+      - flex
+      - git-core
+      - e2fsprogs
+      - xfsprogs
+      - xfsdump
+      - lvm2
+      - gcc
+      - make
+      - gawk
+      - bc
+      - dump
+      - libtool
+      - psmisc
+      - sed
+      - vim
+      - fio
+      - libaio-devel
+      - diffutils
+      - net-tools
+      - ncurses-devel
+      - xfsprogs
+      - e2fsprogs
+      - elfutils-devel
+      - elfutils-libelf-devel
+      - ntfs-3g
+      - mdadm
+      - rpcbind
+      - portmap
+      - hwinfo
+      - iscsi-initiator-utils
+      - openssl
+      - openssl-devel
+      - dwarves
+      - userspace-rcu
+      - zstd
+
+- name: Install btrfs-progs
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    name:
+      - btrfs-progs
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 5
+  register: btrfs_result
+  until: btrfs_result is succeeded
+  when:
+    - ansible_distribution == "Fedora"
+
+- name: Install rpmbuild
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    name:
+      - perl-core
+      - rpm-build
+      - rsync
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 5
+  register: rpmbuild_result
+  until: rpmbuild_result is succeeded
