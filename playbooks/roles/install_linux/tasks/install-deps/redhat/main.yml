@@ -1,0 +1,76 @@
+---
+- name: Enable installation of packages from EPEL
+  ansible.builtin.include_role:
+    name: epel-release
+  when:
+    - ansible_distribution != "Fedora"
+
+- name: Install packages we care about
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    update_cache: true
+    name: "{{ packages }}"
+  retries: 3
+  delay: 5
+  register: result
+  until: result is succeeded
+  vars:
+    packages:
+      - bison
+      - flex
+      - git-core
+      - e2fsprogs
+      - xfsprogs
+      - xfsdump
+      - lvm2
+      - gcc
+      - make
+      - gawk
+      - bc
+      - dump
+      - libtool
+      - psmisc
+      - sed
+      - vim
+      - fio
+      - libaio-devel
+      - diffutils
+      - net-tools
+      - ncurses-devel
+      - xfsprogs
+      - e2fsprogs
+      - elfutils-libelf-devel
+      - ntfs-3g
+      - mdadm
+      - rpcbind
+      - portmap
+      - hwinfo
+      - iscsi-initiator-utils
+      - openssl
+      - openssl-devel
+      - dwarves
+      - userspace-rcu
+      - zstd
+
+- name: Install btrfs-progs
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    update_cache: true
+    name: "{{ packages }}"
+  retries: 3
+  delay: 5
+  register: result
+  until: result is succeeded
+  vars:
+    packages:
+      - btrfs-progs
+  when: ansible_distribution == 'Fedora'
+
+- name: Remove packages that mess with initramfs
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.dnf:
+    state: absent
+    name: dracut-config-generic
