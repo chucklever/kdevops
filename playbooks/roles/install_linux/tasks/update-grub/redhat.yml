@@ -1,0 +1,36 @@
+- name: Disable Grub menu auto-hide
+  become: true
+  become_flags: 'su - -c'
+  become_method: ansible.builtin.sudo
+  ansible.builtin.command: "grub2-editenv - unset menu_auto_hide"
+  register: grub_edit
+  changed_when: "grub_edit.rc == 0"
+
+- name: Determine if system was booted using UEFI
+  ansible.builtin.stat:
+    path: "/sys/firmware/efi/efivars"
+  register: efi_boot
+
+- name: Use /etc/grub2.cfg as the grub configuration file
+  ansible.builtin.set_fact:
+    grub_config_file: "/etc/grub2.cfg"
+  when:
+    - not efi_boot.stat.exists
+
+- name: Use /etc/grub2-efi.cfg as the configuration file
+  ansible.builtin.set_fact:
+    grub_config_file: "/etc/grub2-efi.cfg"
+  when:
+    - efi_boot.stat.exists
+
+- name: Run update-grub
+  become: true
+  become_flags: 'su - -c'
+  become_method: ansible.builtin.sudo
+  ansible.builtin.command: "grub2-mkconfig -o {{ grub_config_file }}"
+  register: grub_update
+  changed_when: "grub_update.rc == 0"
+  tags:
+    - linux
+    - manual-update-grub
+    - console

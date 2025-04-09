@@ -1,0 +1,15 @@
+---
+- name: Debian-specific grub update
+  ansible.builtin.import_tasks: debian.yml
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Red Hat-specific grub update
+  ansible.builtin.import_tasks: redhat.yml
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Suse-specific grub update
+  ansible.builtin.import_tasks: suse.yml
+  when:
+    - ansible_os_family == "Suse"
