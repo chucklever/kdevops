@@ -64,7 +64,8 @@ $(KDEVOPS_PROVISIONED_SSH):
 			LIBVIRT_DEFAULT_URI=$(CONFIG_LIBVIRT_URI) \
 			$(TOPDIR)/scripts/update_ssh_config_guestfs.py; \
 	fi
-	$(Q)ansible $(ANSIBLE_VERBOSE) -i hosts all -m wait_for_connection
+	$(Q)scripts/status_guestfs.sh
+	$(Q)ansible -vvv -i hosts all -u kdevops -m wait_for_connection
 	$(Q)touch $(KDEVOPS_PROVISIONED_SSH)
 
 install_libguestfs:
