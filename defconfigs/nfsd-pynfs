@@ -1,0 +1,406 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# kdevops 5.0.2-g4f2b1f829bcd
+#
+# CONFIG_KDEVOPS_FIRST_RUN is not set
+CONFIG_DEFAULT_BLKTESTS_URL="https://github.com/osandov/blktests.git"
+CONFIG_DEFAULT_BLKTRACE_URL="https://git.kernel.dk/blktrace"
+CONFIG_DEFAULT_DATE_ISO8601="2025-08-30"
+CONFIG_DEFAULT_DBENCH_URL="https://github.com/linux-kdevops/dbench.git"
+CONFIG_DEFAULT_FSTESTS_GIT_URL="git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git"
+CONFIG_DEFAULT_FSTESTS_HTTPS_URL="https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git"
+CONFIG_DEFAULT_FSTESTS_GOOGLE_HTTPS_URL="https://kernel.googlesource.com/pub/scm/fs/xfs/xfstests-dev.git"
+CONFIG_DEFAULT_FSTESTS_KDEVOPS_GITHUB_HTTPS_URL="https://github.com/linux-kdevops/fstests.git"
+CONFIG_DEFAULT_FSTESTS_KDEVOPS_GITLAB_HTTPS_URL="https://gitlab.com/linux-kdevops/fstests.git"
+CONFIG_DEFAULT_GIT_URL="https://git.kernel.org/pub/scm/git/git.git"
+CONFIG_DEFAULT_KDEVOPS_GITHUB_HTTPS_URL="https://github.com/linux-kdevops/kdevops.git"
+CONFIG_DEFAULT_KDEVOPS_GITLAB_HTTPS_URL="https://gitlab.com/linux-kdevops/kdevops.git"
+CONFIG_DEFAULT_KDEVOPS_LINUX_HTTPS_URL="https://github.com/linux-kdevops/linux.git"
+CONFIG_DEFAULT_PYNFS_GIT_URL="git://git.linux-nfs.org/projects/cdmackay/pynfs.git"
+CONFIG_DEFAULT_QEMU_GITHUB_HTTPS_URL="https://github.com/qemu/qemu.git"
+CONFIG_DEFAULT_QEMU_GITHUB_SSH_URL="ssh://git@github.com:qemu/qemu.git"
+CONFIG_DEFAULT_QEMU_GITLAB_HTTPS_URL="https://gitlab.com/qemu-project/qemu.git"
+CONFIG_DEFAULT_QEMU_GITLAB_SSH_URL="ssh://git@gitlab.com:qemu-project/qemu.git"
+CONFIG_DEFAULT_QEMU_JIC23_GITHUB_HTTPS_URL="https://github.com/jic23/qemu.git"
+CONFIG_DEFAULT_QEMU_JIC23_GITHUB_SSH_URL="ssh://git@github.com:jic23/qemu.git"
+CONFIG_DEFAULT_QEMU_JIC23_GITLAB_HTTPS_URL="https://gitlab.com/jic23/qemu.git"
+CONFIG_DEFAULT_QEMU_JIC23_GITLAB_SSH_URL="ssh://git@gitlab.com:jic23/qemu.git"
+CONFIG_DEFAULT_LINUX_NEXT_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git"
+CONFIG_DEFAULT_LINUX_NEXT_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git"
+CONFIG_DEFAULT_LINUX_NEXT_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next.git"
+CONFIG_DEFAULT_LTP_URL="https://github.com/linux-test-project/ltp.git"
+CONFIG_DEFAULT_MODULES_GIT="git://git.kernel.org/pub/scm/linux/kernel/git/modules/linux.git"
+CONFIG_DEFAULT_MODULES_HTTPS_GIT="https://git.kernel.org/pub/scm/linux/kernel/git/modules/linux.git"
+CONFIG_DEFAULT_MODULES_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/modules/linux.git"
+CONFIG_DEFAULT_MMTESTS_GITHUB_HTTPS_URL="https://github.com/gormanm/mmtests.git"
+CONFIG_DEFAULT_MCGROF_LINUS_GIT_URL="https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git"
+CONFIG_DEFAULT_MCGROF_LINUS_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git"
+CONFIG_DEFAULT_MCGROF_LINUS_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/mcgrof/linux.git"
+CONFIG_DEFAULT_MCGROF_NEXT_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git"
+CONFIG_DEFAULT_MCGROF_NEXT_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git"
+CONFIG_DEFAULT_MCGROF_NEXT_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/mcgrof/linux-next.git"
+CONFIG_DEFAULT_NFSTEST_URL="git://git.linux-nfs.org/projects/mora/nfstest.git"
+CONFIG_DEFAULT_TORVALDS_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+CONFIG_DEFAULT_TORVALDS_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+CONFIG_DEFAULT_TORVALDS_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git"
+CONFIG_DEFAULT_STABLE_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+CONFIG_DEFAULT_STABLE_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+CONFIG_DEFAULT_STABLE_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux.git"
+CONFIG_DEFAULT_STABLE_RC_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git"
+CONFIG_DEFAULT_STABLE_RC_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git"
+CONFIG_DEFAULT_STABLE_RC_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux-stable-rc.git"
+CONFIG_DEFAULT_VFS_GIT_URL="git://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git"
+CONFIG_DEFAULT_VFS_HTTPS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git"
+CONFIG_DEFAULT_VFS_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git"
+CONFIG_DEFAULT_XFS_GIT="git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git/"
+CONFIG_DEFAULT_XFS_HTTPS_GIT="https://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git/"
+CONFIG_DEFAULT_XFS_HTTPS_GOOGLE_URL="https://kernel.googlesource.com/pub/scm/fs/xfs/xfs-linux.git/"
+CONFIG_DEFAULT_XFSDUMP_URL="https://github.com/linux-kdevops/xfsdump-dev.git"
+CONFIG_DEFAULT_XFSPROGS_URL="https://git.kernel.org/pub/scm/fs/xfs/xfsprogs-dev.git"
+CONFIG_DISTRO_REDHAT_BASED=y
+CONFIG_DISTRO_FEDORA=y
+
+#
+# Target architecture
+#
+CONFIG_TARGET_ARCH_X86_64=y
+# CONFIG_TARGET_ARCH_ARM64 is not set
+# CONFIG_TARGET_ARCH_PPC64LE is not set
+# end of Target architecture
+
+#
+# SSH update configuration
+#
+CONFIG_KDEVOPS_SSH_CONFIG_UPDATE=y
+CONFIG_KDEVOPS_SSH_CONFIG="~/.ssh/config"
+CONFIG_KDEVOPS_SSH_CONFIG_PREFIX="~/.ssh/config_kdevops_"
+CONFIG_KDEVOPS_SSH_CONFIG_UPDATE_STRICT=y
+CONFIG_KDEVOPS_SSH_CONFIG_UPDATE_BACKUP=y
+# end of SSH update configuration
+
+CONFIG_EXTRA_STORAGE_SUPPORTS_512=y
+CONFIG_EXTRA_STORAGE_SUPPORTS_1K=y
+CONFIG_EXTRA_STORAGE_SUPPORTS_2K=y
+CONFIG_EXTRA_STORAGE_SUPPORTS_4K=y
+# CONFIG_GIT_ALTERNATIVES is not set
+# CONFIG_SETUP_POSTFIX_EMAIL_RELAY is not set
+# CONFIG_HYPERVISOR_TUNING is not set
+
+#
+# Bring up methods
+#
+# CONFIG_GUESTFS is not set
+CONFIG_TERRAFORM=y
+# CONFIG_NIXOS is not set
+# CONFIG_SKIP_BRINGUP is not set
+
+#
+# Terraform cloud provider configuration
+#
+# CONFIG_TERRAFORM_GCE is not set
+# CONFIG_TERRAFORM_AWS is not set
+# CONFIG_TERRAFORM_AZURE is not set
+CONFIG_TERRAFORM_OCI=y
+# CONFIG_TERRAFORM_OPENSTACK is not set
+
+#
+# Resource location
+#
+# CONFIG_TERRAFORM_OCI_REGION_HYD is not set
+# CONFIG_TERRAFORM_OCI_REGION_BOM is not set
+# CONFIG_TERRAFORM_OCI_REGION_YUL is not set
+# CONFIG_TERRAFORM_OCI_REGION_YYZ is not set
+# CONFIG_TERRAFORM_OCI_REGION_IAD is not set
+CONFIG_TERRAFORM_OCI_REGION_ORD=y
+# CONFIG_TERRAFORM_OCI_REGION_PHX is not set
+# CONFIG_TERRAFORM_OCI_REGION_SJC is not set
+CONFIG_TERRAFORM_OCI_REGION="us-chicago-1"
+CONFIG_TERRAFORM_OCI_AD_NUMBER=3
+# CONFIG_TERRAFORM_OCI_REGION_ORD_AD1 is not set
+# CONFIG_TERRAFORM_OCI_REGION_ORD_AD2 is not set
+CONFIG_TERRAFORM_OCI_REGION_ORD_AD3=y
+CONFIG_TERRAFORM_OCI_COMPARTMENT_NAME="nfsd-testing"
+# end of Resource location
+
+#
+# Compute
+#
+CONFIG_TERRAFORM_OCI_SHAPE_FAMILY_FLEX=y
+# CONFIG_TERRAFORM_OCI_SHAPE_FAMILY_GENERIC is not set
+# CONFIG_TERRAFORM_OCI_SHAPE_FAMILY_BARE_METAL is not set
+# CONFIG_TERRAFORM_OCI_SHAPE_VM_STANDARD3_FLEX is not set
+# CONFIG_TERRAFORM_OCI_SHAPE_VM_STANDARD_E4_FLEX is not set
+CONFIG_TERRAFORM_OCI_SHAPE_VM_STANDARD_E5_FLEX=y
+# CONFIG_TERRAFORM_OCI_SHAPE_VM_DENSEIO_E4_FLEX is not set
+# CONFIG_TERRAFORM_OCI_SHAPE_VM_OPTIMIZED3_FLEX is not set
+CONFIG_TERRAFORM_OCI_SHAPE="VM.Standard.E5.Flex"
+CONFIG_TERRAFORM_OCI_INSTANCE_FLEX_OCPUS=4
+CONFIG_TERRAFORM_OCI_INSTANCE_FLEX_MEMORY_IN_GBS=8
+CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX=y
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_UBUNTU is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_CUSTOM is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_7_9_X86 is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_7_9_GPU is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_7_9_ARM64 is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_8_10_GPU is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_8_10_X86 is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_9_5_GPU is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_9_5_X86 is not set
+# CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_9_6_GPU is not set
+CONFIG_TERRAFORM_OCI_OPERATING_SYSTEM_ORACLE_LINUX_9_6_X86=y
+CONFIG_TERRAFORM_OCI_OS_IMAGE_OCID="ocid1.image.oc1.us-chicago-1.aaaaaaaaxglgurk3cbsfgzrknz6bm4745br6sflp73pymuhu7nu3bg324goa"
+# end of Compute
+
+#
+# Storage
+#
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_0 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_1 is not set
+CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_2=y
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_3 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_4 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_5 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_6 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_7 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_8 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_9 is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE_10 is not set
+CONFIG_TERRAFORM_OCI_VOLUMES_PER_INSTANCE=2
+CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_50G=y
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_64G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_128G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_256G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_512G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_1024G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_2048G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_4096G is not set
+# CONFIG_TERRAFORM_OCI_VOLUMES_SIZE_8192G is not set
+CONFIG_TERRAFORM_OCI_VOLUMES_SIZE=50
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_0 is not set
+CONFIG_TERRAFORM_OCI_VPUS_PER_GB_10=y
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_20 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_30 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_40 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_50 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_60 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_70 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_80 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_90 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_100 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_110 is not set
+# CONFIG_TERRAFORM_OCI_VPUS_PER_GB_120 is not set
+CONFIG_TERRAFORM_OCI_VPUS_PER_GB=10
+CONFIG_TERRAFORM_OCI_DATA_VOLUME_DEVICE_FILE_NAME="/dev/oracleoci/oraclevdb"
+CONFIG_TERRAFORM_OCI_SPARSE_VOLUME_DEVICE_FILE_NAME="/dev/oracleoci/oraclevdc"
+# end of Storage
+
+#
+# Network
+#
+CONFIG_TERRAFORM_OCI_ASSIGN_PUBLIC_IP=y
+# CONFIG_TERRAFORM_OCI_USE_EXISTING_VCN is not set
+# end of Network
+
+#
+# Identity & Access
+#
+CONFIG_TERRAFORM_OCI_TENANCY_OCID="ocid1.tenancy.oc1..aaaaaaaanxdmw3e6ftwctuakqglx56lmithr4jtj6bdeloommcfcl22rky3a"
+CONFIG_TERRAFORM_OCI_CONFIG_FILE_PROFILE="DEFAULT"
+# end of Identity & Access
+# end of Terraform cloud provider configuration
+
+#
+# Terraform ssh configuration
+#
+CONFIG_TERRAFORM_SSH_USER_INFER=y
+CONFIG_TERRAFORM_SSH_CONFIG_USER="opc"
+CONFIG_TERRAFORM_SSH_CONFIG_PUBKEY_FILE="~/.ssh/nfsd-testing-nfsd-pynfs.pub"
+CONFIG_TERRAFORM_SSH_CONFIG_GENKEY=y
+CONFIG_TERRAFORM_SSH_CONFIG_GENKEY_OVERWRITE=y
+CONFIG_TERRAFORM_SSH_CONFIG_GENKEY_EMPTY_PASSPHRASE=y
+# end of Terraform ssh configuration
+# end of Bring up methods
+
+#
+# Bring up goals
+#
+CONFIG_KDEVOPS_TRY_REFRESH_REPOS=y
+# CONFIG_RHEL_REGISTER is not set
+CONFIG_KDEVOPS_CUSTOM_YUM_REPOFILE=""
+CONFIG_KDEVOPS_TRY_UPDATE_SYSTEMS=y
+# CONFIG_KDEVOPS_TRY_INSTALL_KDEV_TOOLS is not set
+CONFIG_KDEVOPS_SETUP_RDMA_NONE=y
+# CONFIG_KDEVOPS_SETUP_RDMA_SIW is not set
+# CONFIG_KDEVOPS_SETUP_RDMA_RXE is not set
+# CONFIG_KDEVOPS_SETUP_KTLS is not set
+CONFIG_KDEVOPS_SETUP_NFSD=y
+
+#
+# Configure the kernel NFS server
+#
+# CONFIG_NFSD_EXPORT_FSTYPE_BTRFS is not set
+CONFIG_NFSD_EXPORT_FSTYPE_XFS=y
+# CONFIG_NFSD_EXPORT_FSTYPE_EXT4 is not set
+# CONFIG_NFSD_EXPORT_FSTYPE_TMPFS is not set
+CONFIG_NFSD_EXPORT_FSTYPE="xfs"
+CONFIG_NFSD_EXPORT_PATH="/export"
+CONFIG_NFSD_EXPORT_OPTIONS="rw,insecure,no_root_squash"
+CONFIG_NFSD_THREADS=64
+CONFIG_NFSD_LEASE_TIME=15
+CONFIG_NFSD_EXPORT_STORAGE_LOCAL=y
+# CONFIG_NFSD_EXPORT_STORAGE_ISCSI is not set
+# end of Configure the kernel NFS server
+
+# CONFIG_KDEVOPS_ENABLE_ISCSI is not set
+# end of Bring up goals
+
+#
+# Node sysctl configuration
+#
+# CONFIG_SYSCTL_TUNING is not set
+# end of Node sysctl configuration
+
+#
+# Target workflows
+#
+CONFIG_WORKFLOWS=y
+
+#
+# Shared workflow configuration
+#
+
+#
+# Shared workflow data partition
+#
+# CONFIG_WORKFLOW_DATA_DEVICE_ENABLE_CUSTOM is not set
+CONFIG_WORKFLOW_DATA_DEVICE="/dev/oracleoci/oraclevdb"
+CONFIG_WORKFLOW_DATA_PATH="/data"
+CONFIG_WORKFLOW_INFER_USER_AND_GROUP=y
+CONFIG_WORKFLOW_DATA_FSTYPE_XFS=y
+# CONFIG_WORKFLOW_DATA_FSTYPE_EXT4 is not set
+# CONFIG_WORKFLOW_DATA_FSTYPE_BTRFS is not set
+CONFIG_WORKFLOW_DATA_FSTYPE="xfs"
+CONFIG_WORKFLOW_DATA_LABEL="data"
+# end of Shared workflow data partition
+
+CONFIG_HAVE_CUSTOM_KDEVOPS_GIT=y
+# CONFIG_WORKFLOW_MAKE_CMD_OVERRIDE is not set
+CONFIG_WORKFLOW_KDEVOPS_GIT_CUSTOM=y
+CONFIG_WORKFLOW_KDEVOPS_GIT="https://github.com/chucklever/kdevops.git"
+CONFIG_WORKFLOW_KDEVOPS_GIT_VERSION="nfsd-testing"
+CONFIG_WORKFLOW_KDEVOPS_GIT_DATA="{{data_path}}/kdevops"
+CONFIG_WORKFLOW_KDEVOPS_DIR="{{data_path}}/kdevops"
+# CONFIG_HAVE_DISTRO_CUSTOM_KOTD_REPO is not set
+# end of Shared workflow configuration
+
+# CONFIG_WORKFLOW_LINUX_DISTRO is not set
+# CONFIG_WORKFLOW_LINUX_CUSTOM is not set
+CONFIG_WORKFLOW_LINUX_PACKAGED=y
+CONFIG_BOOTLINUX=y
+CONFIG_WORKFLOWS_TESTS=y
+# CONFIG_WORKFLOWS_TESTS_DEMOS is not set
+CONFIG_WORKFLOWS_LINUX_TESTS=y
+CONFIG_WORKFLOWS_DEDICATED_WORKFLOW=y
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_FSTESTS is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_BLKTESTS is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_CXL is not set
+CONFIG_KDEVOPS_WORKFLOW_DEDICATE_PYNFS=y
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_SELFTESTS is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_GITR is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_LTP is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_NFSTEST is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_SYSBENCH is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_MMTESTS is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_FIO_TESTS is not set
+# CONFIG_KDEVOPS_WORKFLOW_DEDICATE_AI is not set
+CONFIG_KDEVOPS_WORKFLOW_NAME="pynfs"
+CONFIG_KDEVOPS_WORKFLOW_ENABLE_PYNFS=y
+
+#
+# Configure and run pynfs
+#
+# CONFIG_PYNFS_REPO_CUSTOM is not set
+CONFIG_PYNFS_GIT="git://git.linux-nfs.org/projects/cdmackay/pynfs.git"
+CONFIG_PYNFS_GIT_TAG="master"
+# CONFIG_PYNFS_PNFS_BLOCK is not set
+# end of Configure and run pynfs
+
+# CONFIG_KDEVOPS_WORKFLOW_ENABLE_SSD_STEADY_STATE is not set
+# end of Target workflows
+
+#
+# Monitors
+#
+# CONFIG_ENABLE_MONITORING is not set
+# end of Monitors
+
+#
+# Kdevops configuration
+#
+# CONFIG_KDEVOPS_USE_DISTRO_HOSTS_PREFIX is not set
+CONFIG_KDEVOPS_HOSTS_PREFIX="pynfs"
+CONFIG_KDEVOPS_HOST_PREFIX="pynfs"
+# CONFIG_KDEVOPS_BASELINE_AND_DEV is not set
+
+#
+# Ansible post-bring up provisioning configuration
+#
+CONFIG_KDEVOPS_PLAYBOOK_DIR="playbooks"
+CONFIG_KDEVOPS_ANSIBLE_PROVISION_ENABLE=y
+CONFIG_KDEVOPS_ANSIBLE_PROVISION_PLAYBOOK="devconfig.yml"
+CONFIG_KDEVOPS_DEVCONFIG_ENABLE=y
+CONFIG_KDEVOPS_DEVCONFIG_ENABLE_CONSOLE=y
+CONFIG_KDEVOPS_DEVCONFIG_KERNEL_CONSOLE_SETTINGS="console=tty0 console=tty1 console=ttyS0,115200n8"
+CONFIG_KDEVOPS_DEVCONFIG_GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --parity=no --stop=1"
+CONFIG_KDEVOPS_GRUB_TIMEOUT=2
+CONFIG_KDEVOPS_DEVCONFIG_ENABLE_SYSTEMD_WATCHDOG=y
+CONFIG_KDEVOPS_DEVCONFIG_SYSTEMD_WATCHDOG_TIMEOUT_RUNTIME="5min"
+CONFIG_KDEVOPS_DEVCONFIG_SYSTEMD_WATCHDOG_TIMEOUT_REBOOT="10min"
+CONFIG_KDEVOPS_DEVCONFIG_SYSTEMD_WATCHDOG_TIMEOUT_KEXEC="5min"
+CONFIG_KDEVOPS_PYTHON_INTERPRETER="/usr/bin/python3"
+CONFIG_KDEVOPS_PYTHON_OLD_INTERPRETER="/usr/bin/python2"
+# CONFIG_DEVCONFIG_ENABLE_SYSTEMD_JOURNAL_REMOTE is not set
+# CONFIG_DEVCONFIG_ENABLE_SYSTEMD_TIMESYNCD is not set
+# CONFIG_KDEVOPS_DEVCONFIG_ENABLE_CUSTOM_REPOS is not set
+# end of Ansible post-bring up provisioning configuration
+
+#
+# Ansible Configuration
+#
+# CONFIG_ANSIBLE_CFG_FILE_CUSTOM is not set
+
+#
+# Ansible Callback Plugin Configuration
+#
+CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_DEBUG=y
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_DENSE is not set
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_CUSTOM is not set
+CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_STRING="debug"
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_CHECK_MODE_MARKERS is not set
+CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_DISPLAY_FAILED_STDERR=y
+CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_DISPLAY_OK_HOSTS=y
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_DISPLAY_SKIPPED_HOSTS is not set
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_SHOW_CUSTOM_STATS is not set
+# CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_SHOW_PER_HOST_START is not set
+CONFIG_ANSIBLE_CFG_CALLBACK_PLUGIN_SHOW_TASK_PATH_ON_FAILURE=y
+# end of Ansible Callback Plugin Configuration
+
+# CONFIG_ANSIBLE_CFG_DEPRECATION_WARNINGS is not set
+
+#
+# Ansible Python Interpreter
+#
+# CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_AUTO is not set
+# CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_AUTO_LEGACY is not set
+# CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_AUTO_LEGACY_CLIENT is not set
+CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_AUTO_SILENT=y
+# CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_CUSTOM is not set
+CONFIG_ANSIBLE_CFG_INTERPRETER_PYTHON_STRING="auto_silent"
+# end of Ansible Python Interpreter
+
+# CONFIG_ANSIBLE_CFG_FORKS_CUSTOM is not set
+CONFIG_ANSIBLE_CFG_FORKS=10
+# CONFIG_ANSIBLE_CFG_TASK_DEBUGGER is not set
+# CONFIG_ANSIBLE_CFG_INVENTORY_CUSTOM is not set
+# end of Ansible Configuration
+# end of Kdevops configuration
