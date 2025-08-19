@@ -114,6 +114,9 @@ $(KDEVOPS_PROVISIONED_SSH):
 		-i hosts baseline:dev:service \
 		-m wait_for_connection
 	$(Q)touch $(KDEVOPS_PROVISIONED_SSH)
+	$(Q)ansible-playbook $(ANSIBLE_VERBOSE) \
+		-i hosts playbooks/extra_volumes.yml \
+		--extra-vars=@./extra_vars.yaml
 
 status_terraform:
 	$(Q)ansible-playbook $(ANSIBLE_VERBOSE) \
