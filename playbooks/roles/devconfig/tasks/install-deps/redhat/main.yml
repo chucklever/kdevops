@@ -50,6 +50,27 @@
     path: "/etc/dnf/dnf.conf"
     state: present
 
+- name: Retrieve the content of /var/log/oci-yum-repo-mapper.log
+  become: true
+  ansible.builtin.command:
+    cmd: "cat /var/log/oci-yum-repo-mapper.log"
+  register: mapper_log_output
+
+- name: Show the yum repo mapper log
+  ansible.builtin.debug:
+    var: mapper_log_output.stdout_lines
+
+- name: Record the set of enabled dnf repositories
+  become: true
+  become_method: ansible.builtin.sudo
+  ansible.builtin.command: "dnf repolist --enabled"
+  register: repolist_output
+  changed_when: false
+
+- name: Show the set of enabled dnf repositories
+  ansible.builtin.debug:
+    var: repolist_output.stdout_lines
+
 - name: Refresh cache and upgrade all present packages
   become: true
   become_method: sudo
