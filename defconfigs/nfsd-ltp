@@ -197,7 +197,8 @@ CONFIG_TERRAFORM_OCI_SPARSE_VOLUME_DEVICE_FILE_NAME="/dev/oracleoci/oraclevdc"
 # Network
 #
 CONFIG_TERRAFORM_OCI_ASSIGN_PUBLIC_IP=y
-# CONFIG_TERRAFORM_OCI_USE_EXISTING_VCN is not set
+CONFIG_TERRAFORM_OCI_USE_EXISTING_VCN=y
+CONFIG_TERRAFORM_OCI_SUBNET_OCID="ocid1.subnet.oc1.iad.aaaaaaaatbtslxpu6upwmgnd3mj4mli4feetzmh2p3357xhwesylmihymvma"
 # end of Network
 
 #
