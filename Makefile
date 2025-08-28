@@ -19,6 +19,7 @@ export KDEVOPS_NODES :=
 export PYTHONUNBUFFERED=1
 export TOPDIR=./
 export TOPDIR_PATH = $(shell readlink -f $(TOPDIR))
+export TOPDIR_PATH_SHA256SUM = $(shell ./scripts/compute_sha256sum.sh $(TOPDIR_PATH))
 include scripts/refs.Makefile
 
 KDEVOPS_NODES_ROLE_TEMPLATE_DIR :=		$(KDEVOPS_PLAYBOOKS_DIR)/roles/gen_nodes/templates
@@ -82,6 +83,7 @@ INCLUDES = -I include/
 CFLAGS += $(INCLUDES)
 
 ANSIBLE_EXTRA_ARGS += kdevops_version='$(PROJECTRELEASE)'
+ANSIBLE_EXTRA_ARGS += topdir_path_sha256sum='$(TOPDIR_PATH_SHA256SUM)'
 
 export KDEVOPS_HOSTS_TEMPLATE := hosts.j2
 
