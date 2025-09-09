@@ -1,3 +1,8 @@
+variable "azure_accelerated_networking_enabled" {
+  description = "Enable accelerated networking"
+  type        = bool
+}
+
 variable "azure_location" {
   description = "Azure resource location"
   type        = string

@@ -1,9 +1,182 @@
 choice
 	prompt "Azure vmsize"
-	default TERRAFORM_AZURE_VM_SIZE_STANDARD_DS3_V2
+	default TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V4
 	help
 	  This option chooses the size of the virtual machine instances
 	  to be created for the kdevops target nodes.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B1S
+	bool "Standard_B1s"
+	depends on TARGET_ARCH_X86_64
+	help
+	  1 vCPU, 1GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S
+	bool "Standard_B2s"
+	depends on TARGET_ARCH_X86_64
+	help
+	  2 vCPUs, 4GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B4MS
+	bool "Standard_B4ms"
+	depends on TARGET_ARCH_X86_64
+	help
+	  4 vCPUs, 16GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B8MS
+	bool "Standard_B8ms"
+	depends on TARGET_ARCH_X86_64
+	help
+	  8 vCPUs, 32GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B12MS
+	bool "Standard_B12ms"
+	depends on TARGET_ARCH_X86_64
+	help
+	  12 vCPUs, 48GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B16MS
+	bool "Standard_B16ms"
+	depends on TARGET_ARCH_X86_64
+	help
+	  16 vCPUs, 64GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B20MS
+	bool "Standard_B20ms"
+	depends on TARGET_ARCH_X86_64
+	help
+	  20 vCPUs, 80GiB of memory.
+
+	  Azure documentation notes that this size is part of a
+	  previous generation series.
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B2TS_V2
+	bool "Standard_B2ts_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  2 vCPUs, 1GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B2LS_V2
+	bool "Standard_B2ls_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  2 vCPUs, 4GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S_V2
+	bool "Standard_B2s_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  2 vCPUs, 4GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B4LS_V2
+	bool "Standard_B4ls_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  4 vCPUs, 8GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B4S_V2
+	bool "Standard_B4s_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  4 vCPUs, 16GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B8LS_V2
+	bool "Standard_B8ls_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  8 vCPUs, 16GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B8S_V2
+	bool "Standard_B8s_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  8 vCPUs, 32GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B16LS_V2
+	bool "Standard_B16ls_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  16 vCPUs, 32GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B16S_V2
+	bool "Standard_B16s_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  16 vCPUs, 64GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B32LS_V2
+	bool "Standard_B32ls_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  32 vCPUs, 64GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
+
+config TERRAFORM_AZURE_VM_SIZE_STANDARD_B32S_V2
+	bool "Standard_B32s_v2"
+	depends on TARGET_ARCH_X86_64
+	help
+	  32 vCPUs, 128GiB of memory.
+
+	  The B family is described here:
+
+	  https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/b-family?source=recommendations
 
 config TERRAFORM_AZURE_VM_SIZE_STANDARD_DS1_V2
 	bool "Standard_DS1_v2"
@@ -82,6 +255,24 @@ endchoice
 config TERRAFORM_AZURE_VM_SIZE
 	string
 	output yaml
+	default "Standard_B1s" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B1S
+	default "Standard_B2s" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S
+	default "Standard_B4ms" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4MS
+	default "Standard_B8ms" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8MS
+	default "Standard_B12ms" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B12MS
+	default "Standard_B16ms" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16MS
+	default "Standard_B20ms" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B20MS
+	default "Standard_B2ts_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2TS_V2
+	default "Standard_B2ls_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2LS_V2
+	default "Standard_B2s_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S_V2
+	default "Standard_B4ls_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4LS_V2
+	default "Standard_B4s_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4S_V2
+	default "Standard_B8ls_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8LS_V2
+	default "Standard_B8s_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8S_V2
+	default "Standard_B16ls_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16LS_V2
+	default "Standard_B16s_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16S_V2
+	default "Standard_B32ls_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B32LS_V2
+	default "Standard_B32s_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_B32S_V2
 	default "Standard_DS1_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_DS1_V2
 	default "Standard_DS3_v2" if TERRAFORM_AZURE_VM_SIZE_STANDARD_DS3_V2
 	default "Standard_D2s_v3" if TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V3
@@ -93,6 +284,39 @@ config TERRAFORM_AZURE_VM_SIZE
 	default "Standard_D2s_v6" if TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V6
 	default "Standard_D4s_v6" if TERRAFORM_AZURE_VM_SIZE_STANDARD_D4S_V6
 	default "Standard_D8s_v6" if TERRAFORM_AZURE_VM_SIZE_STANDARD_D8S_V6
+
+config TERRAFORM_AZURE_ACCELERATED_NETWORKING_ENABLED
+	bool
+	output yaml
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B1S
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4MS
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8MS
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B12MS
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16MS
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B20MS
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2TS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2LS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B2S_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4LS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B4S_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8LS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B8S_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16LS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B16S_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B32LS_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_B32S_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_DS1_V2
+	default n if TERRAFORM_AZURE_VM_SIZE_STANDARD_DS3_V2
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V3
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D4S_V3
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D8S_V3
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V4
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D4S_V4
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D8S_V4
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D2S_V6
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D4S_V6
+	default y if TERRAFORM_AZURE_VM_SIZE_STANDARD_D8S_V6
 
 choice
 	prompt "Azure image publisher"
