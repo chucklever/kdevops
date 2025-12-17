@@ -184,6 +184,7 @@ handles service enablement using the variable.
 **IMPORTANT**: Always run `make style` before completing work. This checks:
 - Trailing whitespace, mixed tabs/spaces, missing newlines at EOF
 - Commit message formatting (Generated-by/Signed-off-by spacing)
+- Ansible playbook best practices via ansible-lint
 
 ### Commit Message Template
 
@@ -201,6 +202,25 @@ Signed-off-by: Name <email@example.com>
 ```
 
 ## Code Quality Requirements
+
+### Ansible Code Quality
+Always run ansible-lint when modifying Ansible playbooks or roles:
+```bash
+ansible-lint playbooks/  # Check all playbooks for best practices
+```
+This is also run automatically by `make style` and via pre-commit hooks.
+
+**New code requirements**: While the `.ansible-lint` configuration allows
+warnings for legacy compatibility, new playbooks and roles should meet a
+higher standard. New Ansible code must:
+- Name all tasks and plays descriptively
+- Use `true`/`false` for boolean values, not `yes`/`no`
+- Include proper spacing in Jinja2 expressions: `{{ var | default('x') }}`
+- Avoid trailing whitespace
+- Use `changed_when`/`failed_when` for command/shell tasks
+- Prefer `ansible.builtin.*` module names where practical
+
+Run `ansible-lint <file>` on new files and resolve all warnings before commit.
 
 ### Rust Code Quality
 Always run for Rust code (workflows/rcloud, etc.):

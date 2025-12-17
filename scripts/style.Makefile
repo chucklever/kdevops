@@ -5,6 +5,7 @@ fix-whitespace-last-commit:
 PHONY += style
 style:
 	$(Q)if which black > /dev/null ; then black . || true; fi
+	$(Q)if which ansible-lint > /dev/null ; then python3 scripts/ansible_lint_changed.py || true; fi
 	$(Q)python3 scripts/detect_whitespace_issues.py || true
 	$(Q)python3 scripts/detect_indentation_issues.py || true
 	$(Q)python3 scripts/check_commit_format.py || true

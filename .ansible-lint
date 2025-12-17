@@ -1,0 +1,46 @@
+---
+# ansible-lint configuration
+# See https://ansible.readthedocs.io/projects/lint/configuring/
+
+# Limit linting to the playbooks directory
+exclude_paths:
+  - .cache/
+  - .github/
+  - .git/
+  - terraform/
+
+# Skip rules that are too noisy for this legacy codebase.
+# These can be re-enabled incrementally as the codebase is cleaned up.
+skip_list:
+  # FQCN rules require changing every module reference from "debug" to
+  # "ansible.builtin.debug" which is a large undertaking.
+  - fqcn[action-core]
+  - fqcn[action]
+  # Variable naming conventions would require renaming many existing variables.
+  - var-naming[no-role-prefix]
+  - var-naming[no-reserved]
+  # Schema validation errors for become_method require FQCN like
+  # ansible.builtin.sudo instead of just sudo.
+  - schema[playbook]
+  - schema[tasks]
+
+# Rules that produce warnings but do not fail the lint check.
+# These highlight areas for improvement without blocking commits.
+warn_list:
+  - name[missing]
+  - name[play]
+  - yaml[truthy]
+  - yaml[brackets]
+  - yaml[trailing-spaces]
+  - run-once[task]
+  - no-changed-when
+  - ignore-errors
+  - risky-shell-pipe
+  - jinja[spacing]
+  - jinja[invalid]
+
+# Use the basic profile as a starting point
+profile: basic
+
+# Do not fail on warnings
+strict: false
