@@ -136,6 +136,7 @@ terraform/gce/kconfigs/Kconfig.image.generated
 terraform/gce/kconfigs/Kconfig.location.generated
 terraform/gce/kconfigs/Kconfig.machine.generated
 terraform/gce/scripts/__pycache__/
+terraform/gce/cloudbuild.yaml
 
 terraform/oci/kconfigs/Kconfig.image.generated
 terraform/oci/kconfigs/Kconfig.location.generated

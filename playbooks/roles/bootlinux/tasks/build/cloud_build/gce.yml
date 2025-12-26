@@ -1,0 +1,191 @@
+---
+# GCE Cloud Build implementation for kernel builds
+#
+# This task file submits a kernel build to GCE Cloud Build, waits for
+# completion, downloads the artifacts, and installs them on target nodes.
+
+- name: Set GCE Cloud Build variables
+  ansible.builtin.set_fact:
+    cloud_build_bucket: "{{ terraform_gce_cloud_build_bucket | default('') }}"
+    cloud_build_region: "{{ terraform_gce_region | default('us-west1') }}"
+    cloud_build_project: "{{ terraform_gce_project | default('') }}"
+    cloud_build_artifact_prefix: "kernels/{{ target_linux_ref }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Validate Cloud Build bucket is configured
+  ansible.builtin.assert:
+    that:
+      - cloud_build_bucket != ''
+    fail_msg: >-
+      Cloud Build bucket is not configured. Ensure Terraform provisioned
+      the Cloud Build infrastructure and terraform_gce_cloud_build_bucket
+      is set in extra_vars.yaml.
+  run_once: true
+  delegate_to: localhost
+
+- name: Validate GCE project is configured
+  ansible.builtin.assert:
+    that:
+      - cloud_build_project != ''
+    fail_msg: >-
+      GCE project is not configured. Ensure terraform_gce_project is set
+      in extra_vars.yaml via the GCE Kconfig options.
+  run_once: true
+  delegate_to: localhost
+
+- name: Generate Cloud Build configuration
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/cloudbuild/gce_cloudbuild.yaml.j2"
+    dest: "{{ topdir_path }}/terraform/gce/cloudbuild.yaml"
+    mode: "0644"
+  run_once: true
+  delegate_to: localhost
+
+- name: Submit Cloud Build job
+  ansible.builtin.command:
+    cmd: >-
+      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+      submit
+      --project {{ cloud_build_project }}
+      --region {{ cloud_build_region }}
+      --config {{ topdir_path }}/terraform/gce/cloudbuild.yaml
+  register: cloud_build_submit
+  run_once: true
+  delegate_to: localhost
+  changed_when: true
+
+- name: Validate Cloud Build submission output
+  ansible.builtin.fail:
+    msg: >-
+      Cloud Build submission returned no output. Command stderr:
+      {{ cloud_build_submit.stderr | default('(none)') }}
+  when: cloud_build_submit.stdout is not defined or cloud_build_submit.stdout | trim == ''
+  run_once: true
+  delegate_to: localhost
+
+- name: Parse Cloud Build submission result
+  block:
+    - name: Attempt to parse submission JSON
+      ansible.builtin.set_fact:
+        cloud_build_submit_parsed: "{{ cloud_build_submit.stdout | from_json }}"
+      run_once: true
+      delegate_to: localhost
+
+    - name: Validate operation key exists
+      ansible.builtin.fail:
+        msg: >-
+          Cloud Build submission response missing 'operation' key.
+          Response: {{ cloud_build_submit_parsed | to_nice_json }}
+      when: cloud_build_submit_parsed.operation is not defined
+      run_once: true
+      delegate_to: localhost
+
+    - name: Set cloud_build_operation
+      ansible.builtin.set_fact:
+        cloud_build_operation: "{{ cloud_build_submit_parsed.operation }}"
+      run_once: true
+      delegate_to: localhost
+  rescue:
+    - name: Report JSON parsing failure
+      ansible.builtin.fail:
+        msg: >-
+          Failed to parse Cloud Build submission output as JSON.
+          Raw output: {{ cloud_build_submit.stdout }}
+      run_once: true
+      delegate_to: localhost
+
+- name: Display Cloud Build operation
+  ansible.builtin.debug:
+    msg: "Cloud Build submitted: {{ cloud_build_operation }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Wait for Cloud Build to complete
+  ansible.builtin.command:
+    cmd: >-
+      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+      wait
+      --operation {{ cloud_build_operation }}
+      --timeout {{ bootlinux_cloud_build_timeout_minutes | default(60) }}
+  register: cloud_build_result
+  run_once: true
+  delegate_to: localhost
+  changed_when: false
+
+- name: Parse Cloud Build result
+  ansible.builtin.set_fact:
+    cloud_build_status: "{{ (cloud_build_result.stdout | from_json).status | default('UNKNOWN') }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Verify Cloud Build succeeded
+  ansible.builtin.assert:
+    that:
+      - cloud_build_status == 'SUCCESS'
+    fail_msg: "Cloud Build completed with status: {{ cloud_build_status }}"
+    success_msg: "Cloud Build completed successfully"
+  run_once: true
+  delegate_to: localhost
+
+- name: Create local artifacts directory
+  ansible.builtin.file:
+    path: "{{ bootlinux_artifacts_dir }}/cloud_build"
+    state: directory
+    mode: "0755"
+  run_once: true
+  delegate_to: localhost
+
+- name: Download kernel artifacts from GCS
+  ansible.builtin.command:
+    cmd: >-
+      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+      download
+      --bucket {{ cloud_build_bucket }}
+      --prefix {{ cloud_build_artifact_prefix }}
+      --dest {{ bootlinux_artifacts_dir }}/cloud_build
+  register: cloud_build_download
+  run_once: true
+  delegate_to: localhost
+  changed_when: true
+
+- name: Parse downloaded files list with safe fallback
+  block:
+    - name: Parse download output JSON
+      ansible.builtin.set_fact:
+        cloud_build_download_parsed: "{{ cloud_build_download.stdout | default('{}') | from_json }}"
+        cloud_build_download_parse_failed: false
+      run_once: true
+      delegate_to: localhost
+  rescue:
+    - name: Handle JSON parsing failure
+      ansible.builtin.set_fact:
+        cloud_build_download_parsed: {}
+        cloud_build_download_parse_failed: true
+      run_once: true
+      delegate_to: localhost
+
+- name: Set downloaded files list with fallback
+  ansible.builtin.set_fact:
+    cloud_build_downloaded_files: "{{ cloud_build_download_parsed.files | default([]) }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Warn about empty or unparseable download output
+  ansible.builtin.debug:
+    msg: >-
+      Cloud Build download output could not be parsed or is missing 'files' key.
+      Raw output: {{ cloud_build_download.stdout | default('(no output)') }}
+  when: cloud_build_download_parse_failed | default(false) or cloud_build_downloaded_files | length == 0
+  run_once: true
+  delegate_to: localhost
+
+- name: Display downloaded artifacts
+  ansible.builtin.debug:
+    msg: "Downloaded {{ cloud_build_downloaded_files | length }} artifact(s)"
+  run_once: true
+  delegate_to: localhost
+
+- name: Install kernel artifacts on target nodes
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build/install_artifacts.yml"

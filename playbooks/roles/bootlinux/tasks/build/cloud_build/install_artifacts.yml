@@ -1,0 +1,97 @@
+---
+# Install kernel artifacts from cloud build on target nodes
+#
+# This task file copies kernel packages from the controller to target
+# nodes and installs them.
+
+- name: Find kernel packages (RPM)
+  ansible.builtin.find:
+    paths: "{{ bootlinux_artifacts_dir }}/cloud_build"
+    patterns: "*.rpm"
+    recurse: true
+  register: found_rpms
+  delegate_to: localhost
+  run_once: true
+
+- name: Find kernel packages (DEB)
+  ansible.builtin.find:
+    paths: "{{ bootlinux_artifacts_dir }}/cloud_build"
+    patterns: "*.deb"
+    recurse: true
+  register: found_debs
+  delegate_to: localhost
+  run_once: true
+
+- name: Set package list based on OS family
+  ansible.builtin.set_fact:
+    kernel_packages_to_install: >-
+      {{ found_debs.files | map(attribute='path') | list
+         if ansible_os_family == 'Debian'
+         else found_rpms.files | map(attribute='path') | list }}
+
+- name: Create temporary directory for kernel packages
+  become: true
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: kdevops_kernel_
+  register: kernel_temp_dir
+
+- name: Copy kernel packages to target nodes
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ kernel_temp_dir.path }}/"
+    mode: "0644"
+  loop: "{{ kernel_packages_to_install }}"
+  loop_control:
+    label: "{{ item | basename }}"
+
+- name: Build list of target RPM paths
+  ansible.builtin.set_fact:
+    target_rpm_packages: >-
+      {{ kernel_packages_to_install
+         | map('basename')
+         | map('regex_replace', '^(.*)$', kernel_temp_dir.path ~ '/\1')
+         | list }}
+  when:
+    - ansible_os_family != 'Debian'
+    - kernel_packages_to_install | length > 0
+
+- name: Install kernel packages (RPM)
+  become: true
+  ansible.builtin.dnf:
+    name: "{{ target_rpm_packages }}"
+    state: present
+    disable_gpg_check: true
+    allow_downgrade: true
+  when:
+    - ansible_os_family != 'Debian'
+    - kernel_packages_to_install | length > 0
+
+- name: Install kernel packages (DEB)
+  become: true
+  ansible.builtin.shell:
+    cmd: dpkg -i {{ kernel_temp_dir.path }}/*.deb
+  when:
+    - ansible_os_family == 'Debian'
+    - kernel_packages_to_install | length > 0
+  changed_when: true
+
+- name: Read kernel release file if present
+  ansible.builtin.slurp:
+    src: "{{ bootlinux_artifacts_dir }}/cloud_build/kernel.release"
+  register: kernel_release_content
+  delegate_to: localhost
+  run_once: true
+  ignore_errors: true
+
+- name: Set target kernel reference from release file
+  ansible.builtin.set_fact:
+    target_linux_ref: "{{ kernel_release_content.content | b64decode | trim }}"
+  when: kernel_release_content is succeeded
+
+- name: Clean up temporary directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ kernel_temp_dir.path }}"
+    state: absent

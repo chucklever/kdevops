@@ -312,6 +312,7 @@ mrproper:
 	$(Q)rm -f terraform/*/terraform.tfvars
 	$(Q)rm -rf terraform/*/.terraform
 	$(Q)rm -f terraform/*/.terraform.lock.hcl
+	$(Q)rm -f terraform/gce/cloudbuild.yaml
 	$(Q)rm -f $(KDEVOPS_NODES)
 	$(Q)rm -f $(ANSIBLE_INVENTORY_FILE) $(KDEVOPS_MRPROPER)
 	$(Q)rm -f .config .config.old extra_vars.yaml $(KCONFIG_YAMLCFG)
