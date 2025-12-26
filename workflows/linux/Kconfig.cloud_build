@@ -1,0 +1,13 @@
+if BOOTLINUX_CLOUD_BUILD
+
+config BOOTLINUX_CLOUD_BUILD_TIMEOUT
+	int "Cloud build timeout (minutes)"
+	output yaml
+	default 60
+	help
+	  Maximum time in minutes for the cloud build to complete.
+	  A full kernel build with modules typically takes 15-45
+	  minutes depending on the machine type. Set a higher value
+	  if building with many modules or on smaller instances.
+
+endif # BOOTLINUX_CLOUD_BUILD

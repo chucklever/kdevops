@@ -54,6 +54,10 @@ BOOTLINUX_ARGS	+= bootlinux_9p_mount_tag='$(subst ",,$(CONFIG_BOOTLINUX_9P_MOUNT
 LINUX_CLONE_DEFAULT_TYPE := linux-clone-9p
 endif
 
+ifeq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
+BOOTLINUX_ARGS	+= bootlinux_cloud_build_timeout_minutes='$(subst ",,$(CONFIG_BOOTLINUX_CLOUD_BUILD_TIMEOUT))'
+endif
+
 # XXX: I can't seem to use after this LINUX_DYNAMIC_RUNTIME_VARS += for other
 # future dynamic run time variables. So figure how the hell to do that
 # so we can enable other dynamic variables for other make targets other

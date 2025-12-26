@@ -91,6 +91,26 @@ config BOOTLINUX_BUILDER
 	  This choice is best when the test runners are resource-
 	  limited or vastly different than the controller host.
 
+config BOOTLINUX_CLOUD_BUILD
+	bool "Cloud build service"
+	output yaml
+	depends on TERRAFORM
+	help
+	  Choosing this option builds the test kernel using the cloud
+	  provider's native build service. For GCE this uses Cloud
+	  Build, for AWS this uses CodeBuild, and for Azure this uses
+	  Azure Pipelines.
+
+	  The build runs on managed infrastructure in the cloud and
+	  produces kernel packages that are uploaded to cloud storage.
+	  Target nodes then download and install the packages.
+
+	  This approach offloads the build from both the controller
+	  and target nodes, and can leverage powerful cloud build
+	  machines for faster compilation.
+
+	  Currently supported: GCE Cloud Build
+
 endchoice
 
 if BOOTLINUX_9P
@@ -150,6 +170,8 @@ config BOOTLINUX_9P_MOUNT_TAG
 endmenu
 
 endif # BOOTLINUX_9P
+
+source "workflows/linux/Kconfig.cloud_build"
 
 choice
 	prompt "Compiler to use to build the kernel"
