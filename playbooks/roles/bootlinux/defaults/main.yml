@@ -74,6 +74,12 @@ bootlinux_b4_am_this_host: false
 bootlinux_9p: false
 bootlinux_targets: false
 bootlinux_builder: false
+bootlinux_cloud_build: false
+
+# Cloud build timeout in minutes. Controls both the overall Cloud Build job
+# deadline and the polling wait time. A typical kernel build takes 15-45
+# minutes depending on configuration and machine type.
+bootlinux_cloud_build_timeout_minutes: 60
 
 kdevops_workflow_enable_cxl: false
 
