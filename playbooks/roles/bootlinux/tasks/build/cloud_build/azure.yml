@@ -1,0 +1,13 @@
+---
+# Azure Pipelines placeholder - not yet implemented
+#
+# This file provides a clear error message when attempting to use
+# cloud builds with Azure. Future implementation would use Azure
+# Pipelines to build kernels and Azure Blob Storage for artifacts.
+
+- name: Azure Pipelines not yet implemented
+  ansible.builtin.fail:
+    msg: >-
+      Azure Pipelines support is not yet implemented for kernel builds.
+      Use BOOTLINUX_TARGETS or BOOTLINUX_BUILDER instead, or switch
+      to GCE which supports cloud builds.

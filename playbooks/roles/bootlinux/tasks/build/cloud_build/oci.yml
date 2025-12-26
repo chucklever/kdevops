@@ -1,0 +1,13 @@
+---
+# OCI DevOps Build Pipelines placeholder - not yet implemented
+#
+# This file provides a clear error message when attempting to use
+# cloud builds with OCI. Future implementation would use OCI DevOps
+# Build Pipelines to build kernels and Object Storage for artifacts.
+
+- name: OCI DevOps Build Pipelines not yet implemented
+  ansible.builtin.fail:
+    msg: >-
+      OCI DevOps Build Pipelines support is not yet implemented for kernel builds.
+      Use BOOTLINUX_TARGETS or BOOTLINUX_BUILDER instead, or switch
+      to GCE which supports cloud builds.
