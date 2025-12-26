@@ -56,15 +56,19 @@ GCE_COMPUTE_API = "https://compute.googleapis.com/compute/v1"
 GCE_API_TIMEOUT = 30
 
 
-def get_authenticated_session() -> (
-    tuple[google.auth.transport.requests.AuthorizedSession, str]
-):
+def get_authenticated_session(
+    scopes: Optional[list[str]] = None,
+) -> tuple[google.auth.transport.requests.AuthorizedSession, str]:
     """
     Create an authenticated requests session for GCE API calls.
 
     Returns an AuthorizedSession that automatically handles OAuth2 token
     refresh. This allows long-running callers to make API requests without
     worrying about token expiration.
+
+    Args:
+        scopes: OAuth2 scopes to request. If None, defaults to compute.readonly.
+                For broader access (Cloud Build, Storage), use cloud-platform.
 
     Returns:
         tuple: (session, project_id) - AuthorizedSession and project ID
@@ -73,9 +77,10 @@ def get_authenticated_session() -> (
         ValueError: If project ID cannot be determined
         google.auth.exceptions.DefaultCredentialsError: If authentication fails
     """
-    credentials, project = google.auth.default(
-        scopes=["https://www.googleapis.com/auth/compute.readonly"]
-    )
+    if scopes is None:
+        scopes = ["https://www.googleapis.com/auth/compute.readonly"]
+
+    credentials, project = google.auth.default(scopes=scopes)
 
     if not project:
         # Try environment variables
