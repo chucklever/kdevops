@@ -1,0 +1,42 @@
+---
+# Cloud build dispatcher - routes to provider-specific implementation
+#
+# This task file is the entry point for cloud-based kernel builds.
+# It validates the configuration and dispatches to the appropriate
+# provider-specific implementation (GCE, AWS, Azure, or OCI).
+
+- name: Validate cloud build configuration
+  ansible.builtin.assert:
+    that:
+      - kdevops_terraform_provider is defined
+      - kdevops_terraform_provider in ['gce', 'aws', 'azure', 'oci']
+    fail_msg: >-
+      Cloud build requires a supported cloud provider.
+      Currently supported: gce
+      Configured: {{ kdevops_terraform_provider | default('undefined') }}
+  run_once: true
+  delegate_to: localhost
+
+- name: Execute GCE Cloud Build
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build/gce.yml"
+  when:
+    - kdevops_terraform_provider == 'gce'
+
+- name: Execute AWS CodeBuild
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build/aws.yml"
+  when:
+    - kdevops_terraform_provider == 'aws'
+
+- name: Execute Azure Pipelines Build
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build/azure.yml"
+  when:
+    - kdevops_terraform_provider == 'azure'
+
+- name: Execute OCI DevOps Build
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build/oci.yml"
+  when:
+    - kdevops_terraform_provider == 'oci'

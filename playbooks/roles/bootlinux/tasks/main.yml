@@ -243,6 +243,12 @@
   when:
     - bootlinux_builder|bool
 
+- name: Build kernel using cloud build service
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/build/cloud_build.yml"
+  when:
+    - bootlinux_cloud_build|bool
+
 - name: Run uname before
   ansible.builtin.command: "uname -r"
   register: uname_cmd_before
