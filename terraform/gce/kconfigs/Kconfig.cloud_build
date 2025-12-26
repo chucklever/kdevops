@@ -1,0 +1,21 @@
+if BOOTLINUX_CLOUD_BUILD
+
+config TERRAFORM_GCE_CLOUD_BUILD_BUCKET
+	string "GCS bucket name for kernel artifacts"
+	output yaml
+	default ""
+	help
+	  Name of the GCS bucket where Cloud Build stores kernel
+	  artifacts. If left empty, a bucket name is generated from
+	  the project ID with a random suffix to ensure uniqueness.
+
+config TERRAFORM_GCE_CLOUD_BUILD_RETENTION_DAYS
+	int "Artifact retention period (days)"
+	output yaml
+	default 30
+	help
+	  Number of days to retain kernel artifacts in the GCS
+	  bucket before automatic deletion. Older artifacts are
+	  cleaned up to manage storage costs.
+
+endif # BOOTLINUX_CLOUD_BUILD

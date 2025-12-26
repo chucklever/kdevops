@@ -15,5 +15,8 @@ endmenu
 menu "Identity & Access"
 source "terraform/gce/kconfigs/Kconfig.identity"
 endmenu
+menu "Cloud Build"
+source "terraform/gce/kconfigs/Kconfig.cloud_build"
+endmenu
 
 endif # TERRAFORM_GCE

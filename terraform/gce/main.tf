@@ -69,3 +69,13 @@ module "kdevops_compute_disks" {
   cd_zone            = var.gce_zone
   source             = "./kdevops_compute_disks"
 }
+
+module "kdevops_cloud_build" {
+  count                      = var.gce_cloud_build_enabled ? 1 : 0
+  cb_project                 = var.gce_project
+  cb_region                  = var.gce_region
+  cb_bucket_name             = var.gce_cloud_build_bucket
+  cb_artifact_retention_days = var.gce_cloud_build_retention_days
+  cb_service_account_id      = var.gce_cloud_build_service_account_id
+  source                     = "./kdevops_cloud_build"
+}

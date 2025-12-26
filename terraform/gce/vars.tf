@@ -69,3 +69,26 @@ variable "gce_zone" {
   description = "Availability zone"
   type        = string
 }
+
+variable "gce_cloud_build_enabled" {
+  description = "Enable Cloud Build infrastructure"
+  type        = bool
+  default     = false
+}
+
+variable "gce_cloud_build_bucket" {
+  description = "GCS bucket name for kernel artifacts (auto-generated if empty)"
+  type        = string
+  default     = ""
+}
+
+variable "gce_cloud_build_retention_days" {
+  description = "Number of days to retain kernel artifacts"
+  type        = number
+  default     = 30
+}
+
+variable "gce_cloud_build_service_account_id" {
+  description = "Service account ID for Cloud Build operations"
+  type        = string
+}
