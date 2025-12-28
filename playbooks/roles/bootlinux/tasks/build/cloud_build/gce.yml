@@ -2,7 +2,8 @@
 # GCE Cloud Build implementation for kernel builds
 #
 # This task file submits a kernel build to GCE Cloud Build, waits for
-# completion, downloads the artifacts, and installs them on target nodes.
+# completion, and downloads the artifacts to the local artifacts directory.
+# Installation on target nodes is handled separately via WORKFLOW_LINUX_PACKAGED.
 
 - name: Set GCE Cloud Build variables
   ansible.builtin.set_fact:
@@ -128,9 +129,16 @@
   run_once: true
   delegate_to: localhost
 
-- name: Create local artifacts directory
+- name: Remove old artifacts directory on the control host
   ansible.builtin.file:
-    path: "{{ bootlinux_artifacts_dir }}/cloud_build"
+    path: "{{ bootlinux_artifacts_dir }}"
+    state: absent
+  run_once: true
+  delegate_to: localhost
+
+- name: Ensure an empty artifacts directory exists on the control host
+  ansible.builtin.file:
+    path: "{{ bootlinux_artifacts_dir }}"
     state: directory
     mode: "0755"
   run_once: true
@@ -143,7 +151,7 @@
       download
       --bucket {{ cloud_build_bucket }}
       --prefix {{ cloud_build_artifact_prefix }}
-      --dest {{ bootlinux_artifacts_dir }}/cloud_build
+      --dest {{ bootlinux_artifacts_dir }}
   register: cloud_build_download
   run_once: true
   delegate_to: localhost
@@ -182,10 +190,9 @@
 
 - name: Display downloaded artifacts
   ansible.builtin.debug:
-    msg: "Downloaded {{ cloud_build_downloaded_files | length }} artifact(s)"
+    msg: "Downloaded {{ cloud_build_downloaded_files | length }} artifact(s) to {{ bootlinux_artifacts_dir }}"
   run_once: true
   delegate_to: localhost
 
-- name: Install kernel artifacts on target nodes
-  ansible.builtin.include_tasks:
-    file: "{{ role_path }}/tasks/build/cloud_build/install_artifacts.yml"
+- name: Skip the kernel install steps
+  ansible.builtin.meta: end_play
