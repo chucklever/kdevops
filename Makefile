@@ -164,7 +164,11 @@ DEFAULT_DEPS += $(KDEVOPS_NODES)
 endif
 
 KDEVOPS_BRING_UP_DEPS += $(KDEVOPS_BRING_UP_DEPS_EARLY)
+
+# Cloud build uses serverless infrastructure - no VMs to configure
+ifneq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
 KDEVOPS_BRING_UP_DEPS += $(KDEVOPS_PROVISIONED_DEVCONFIG)
+endif
 
 ifeq (y,$(CONFIG_WORKFLOWS))
 include workflows/Makefile

@@ -46,3 +46,4 @@ kdevops_krb5_enable: false
 kdevops_enable_iscsi: false
 
 bootlinux_builder: false
+bootlinux_cloud_build: false

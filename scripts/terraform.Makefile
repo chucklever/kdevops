@@ -34,7 +34,11 @@ KDEVOPS_NODES :=		terraform/$(KDEVOPS_CLOUD_PROVIDER)/nodes.tf
 TERRAFORM_EXTRA_VARS += kdevops_enable_terraform='True'
 TERRAFORM_EXTRA_VARS += kdevops_terraform_provider='$(KDEVOPS_CLOUD_PROVIDER)'
 
+# Cloud build mode uses serverless build infrastructure - no VMs to provision
+# or SSH into. Skip SSH provisioning entirely for cloud build.
+ifneq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
 export KDEVOPS_PROVISIONED_SSH := $(KDEVOPS_PROVISIONED_SSH_DEFAULT_GUARD)
+endif
 
 TFVARS_TEMPLATE_DIR=playbooks/roles/gen_tfvars/templates
 TFVARS_FILE_NAME=terraform.tfvars

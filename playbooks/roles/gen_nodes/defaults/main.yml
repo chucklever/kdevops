@@ -114,6 +114,7 @@ docker_mirror_9p_security_model: "none"
 docker_mirror_9p_driver: "virtio-9p-pci"
 
 bootlinux_builder: false
+bootlinux_cloud_build: false
 
 guestfs_requires_uefi: false
 

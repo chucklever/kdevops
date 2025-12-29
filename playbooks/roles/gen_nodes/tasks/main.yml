@@ -60,6 +60,13 @@
   when:
     - bootlinux_builder
 
+- name: Set empty nodes array for cloud build
+  tags: vars
+  ansible.builtin.set_fact:
+    cloud_build_nodes: []
+  when:
+    - bootlinux_cloud_build
+
 - name: Set iscsi_nodes list
   ansible.builtin.set_fact:
     iscsi_nodes: "{{ [kdevops_host_prefix + '-iscsi'] }}"
@@ -187,6 +194,19 @@
     - bootlinux_builder
     - ansible_nodes_template.stat.exists
 
+- name: Generate empty kdevops nodes file for cloud build
+  tags: ["nodes"]
+  vars:
+    node_template: "{{ kdevops_nodes_template | basename }}"
+    all_generic_nodes: "{{ cloud_build_nodes }}"
+    nodes: "{{ all_generic_nodes }}"
+  ansible.builtin.template:
+    src: "{{ node_template }}"
+    dest: "{{ topdir_path }}/{{ kdevops_nodes }}"
+    force: true
+  when:
+    - bootlinux_cloud_build
+    - ansible_nodes_template.stat.exists
 
 - name: Generate the pynfs kdevops nodes file using nodes file using template as jinja2 source template
   tags: ["nodes"]

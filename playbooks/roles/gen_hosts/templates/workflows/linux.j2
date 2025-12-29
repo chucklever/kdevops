@@ -1,4 +1,24 @@
-{# Template for the kernel builder workflow #}
+{# Template for the kernel build workflow #}
+{# Cloud build uses serverless infrastructure - no remote hosts needed #}
+{% if bootlinux_cloud_build %}
+[all]
+localhost ansible_connection=local
+[all:vars]
+ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
+
+[baseline]
+[baseline:vars]
+ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
+
+[dev]
+[dev:vars]
+ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
+
+[service]
+[service:vars]
+ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
+{% else %}
+{# Separate builder workflow - builder VM is provisioned #}
 [all]
 localhost ansible_connection=local
 {{ kdevops_host_prefix }}-builder
@@ -17,3 +37,4 @@ ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
 [service]
 [service:vars]
 ansible_python_interpreter =  "{{ kdevops_python_interpreter }}"
+{% endif %}
