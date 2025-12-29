@@ -22,6 +22,7 @@
     name: install-rust-deps
   when:
     - not workflow_linux_packaged|bool
+    - not bootlinux_cloud_build|bool
 
 # Distro specific
 - name: Install dependencies to build and install the Linux kernel
@@ -30,6 +31,7 @@
   when:
     - not bootlinux_9p|bool
     - not workflow_linux_packaged|bool
+    - not bootlinux_cloud_build|bool
 
 # When using 9P builds, we still need make on the guest for modules_install
 - name: Install essential build tools for 9P builds
@@ -38,6 +40,7 @@
   when:
     - bootlinux_9p|bool
     - not workflow_linux_packaged|bool
+    - not bootlinux_cloud_build|bool
 
 # Setup ccache configuration
 - name: Setup ccache configuration
@@ -46,6 +49,7 @@
   when:
     - bootlinux_ccache|default(false)|bool
     - not workflow_linux_packaged|bool
+    - not bootlinux_cloud_build|bool
   tags: ['ccache']
 
 # We do this regardless of what distro you use
@@ -194,6 +198,7 @@
     name: create_data_partition
   when:
     - not workflow_linux_packaged|bool
+    - not bootlinux_cloud_build|bool
 
 - name: Mount bootlinux 9p on each target node
   become: true
@@ -246,6 +251,12 @@
 - name: Build kernel using cloud build service
   ansible.builtin.include_tasks:
     file: "{{ role_path }}/tasks/build/cloud_build.yml"
+  when:
+    - bootlinux_cloud_build|bool
+
+# Cloud build produces an image, not a kernel on running VMs, so exit early
+- name: End play after cloud build completes
+  ansible.builtin.meta: end_play
   when:
     - bootlinux_cloud_build|bool
 

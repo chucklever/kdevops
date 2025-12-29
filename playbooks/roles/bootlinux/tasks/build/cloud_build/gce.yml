@@ -5,7 +5,7 @@
 # completion, and downloads the artifacts to the local artifacts directory.
 # Installation on target nodes is handled separately via WORKFLOW_LINUX_PACKAGED.
 
-- name: Set GCE Cloud Build variables
+- name: Set GCE Cloud Build variables from extra_vars
   ansible.builtin.set_fact:
     cloud_build_bucket: "{{ terraform_gce_cloud_build_bucket | default('') }}"
     cloud_build_region: "{{ terraform_gce_region | default('us-west1') }}"
@@ -14,14 +14,37 @@
   run_once: true
   delegate_to: localhost
 
+# Query terraform output if bucket not in extra_vars (happens in cloud build mode
+# since extra_vars is generated before terraform provisions infrastructure)
+- name: Query Cloud Build bucket from terraform output
+  ansible.builtin.command:
+    cmd: terraform output -raw cloud_build_bucket
+    chdir: "{{ topdir_path }}/terraform/gce"
+  register: terraform_bucket_output
+  run_once: true
+  delegate_to: localhost
+  changed_when: false
+  failed_when: false
+  when: cloud_build_bucket == ''
+
+- name: Set Cloud Build bucket from terraform output
+  ansible.builtin.set_fact:
+    cloud_build_bucket: "{{ terraform_bucket_output.stdout }}"
+  run_once: true
+  delegate_to: localhost
+  when:
+    - cloud_build_bucket == ''
+    - terraform_bucket_output.rc == 0
+    - terraform_bucket_output.stdout | trim != ''
+
 - name: Validate Cloud Build bucket is configured
   ansible.builtin.assert:
     that:
       - cloud_build_bucket != ''
     fail_msg: >-
       Cloud Build bucket is not configured. Ensure Terraform provisioned
-      the Cloud Build infrastructure and terraform_gce_cloud_build_bucket
-      is set in extra_vars.yaml.
+      the Cloud Build infrastructure. Run 'terraform output cloud_build_bucket'
+      in terraform/gce/ to verify the bucket exists.
   run_once: true
   delegate_to: localhost
 
@@ -34,6 +57,27 @@
       in extra_vars.yaml via the GCE Kconfig options.
   run_once: true
   delegate_to: localhost
+
+- name: Set kernel config path
+  ansible.builtin.set_fact:
+    cloud_build_config_path: "{{ role_path }}/templates/{{ linux_config | default('config-kdevops') }}"
+    cloud_build_config_gcs_path: "{{ cloud_build_artifact_prefix }}/config"
+  run_once: true
+  delegate_to: localhost
+
+- name: Upload kernel config to GCS
+  ansible.builtin.command:
+    cmd: >-
+      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+      upload
+      --bucket {{ cloud_build_bucket }}
+      --source {{ cloud_build_config_path }}
+      --dest {{ cloud_build_config_gcs_path }}
+  environment:
+    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
+  run_once: true
+  delegate_to: localhost
+  changed_when: true
 
 - name: Generate Cloud Build configuration
   ansible.builtin.template:
@@ -51,6 +95,8 @@
       --project {{ cloud_build_project }}
       --region {{ cloud_build_region }}
       --config {{ topdir_path }}/terraform/gce/cloudbuild.yaml
+  environment:
+    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
   register: cloud_build_submit
   run_once: true
   delegate_to: localhost
@@ -109,6 +155,8 @@
       wait
       --operation {{ cloud_build_operation }}
       --timeout {{ bootlinux_cloud_build_timeout_minutes | default(60) }}
+  environment:
+    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
   register: cloud_build_result
   run_once: true
   delegate_to: localhost
@@ -152,6 +200,8 @@
       --bucket {{ cloud_build_bucket }}
       --prefix {{ cloud_build_artifact_prefix }}
       --dest {{ bootlinux_artifacts_dir }}
+  environment:
+    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
   register: cloud_build_download
   run_once: true
   delegate_to: localhost

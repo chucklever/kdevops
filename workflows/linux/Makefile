@@ -83,6 +83,11 @@ ifeq (y,$(CONFIG_KDEVOPS_SETUP_NFSD))
 BOOTLINUX_LIMIT := baseline:dev:nfsd
 endif
 
+# Cloud builds run entirely on localhost via cloud services, no target VMs
+ifeq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
+BOOTLINUX_LIMIT := localhost
+endif
+
 PHONY +=  linux-help-menu
 linux-help-menu:
 	@echo "Linux git kernel development options"
