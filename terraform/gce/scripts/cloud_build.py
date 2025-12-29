@@ -201,6 +201,34 @@ def list_bucket_objects(
     return all_objects
 
 
+def upload_object(
+    session: AuthorizedSession,
+    bucket: str,
+    object_name: str,
+    source: Path,
+) -> None:
+    """
+    Upload an object to GCS.
+
+    Args:
+        session: Authenticated requests session
+        bucket: GCS bucket name
+        object_name: Object name in bucket
+        source: Local file path to upload
+    """
+    url = f"https://storage.googleapis.com/upload/storage/v1/b/{bucket}/o"
+    params = {"uploadType": "media", "name": object_name}
+
+    with open(source, "rb") as f:
+        response = session.post(url, params=params, data=f, timeout=300)
+
+    if not response.ok:
+        raise CloudBuildError(
+            f"Failed to upload {source} to {object_name}: "
+            f"{response.status_code} {response.text}"
+        )
+
+
 def download_object(
     session: AuthorizedSession,
     bucket: str,
@@ -312,6 +340,12 @@ def main() -> None:
     download_parser.add_argument("--prefix", required=True, help="Object prefix")
     download_parser.add_argument("--dest", required=True, help="Destination directory")
 
+    # Upload command
+    upload_parser = subparsers.add_parser("upload", help="Upload a file to GCS")
+    upload_parser.add_argument("--bucket", required=True, help="GCS bucket name")
+    upload_parser.add_argument("--source", required=True, help="Local file path")
+    upload_parser.add_argument("--dest", required=True, help="Destination object name")
+
     args = parser.parse_args()
 
     try:
@@ -358,6 +392,11 @@ def main() -> None:
             dest = Path(args.dest)
             downloaded = download_artifacts(session, args.bucket, args.prefix, dest)
             print(json.dumps({"files": [str(p) for p in downloaded]}))
+
+        elif args.command == "upload":
+            source = Path(args.source)
+            upload_object(session, args.bucket, args.dest, source)
+            print(json.dumps({"uploaded": args.dest}))
 
     except (CloudBuildError, ValueError, requests.exceptions.RequestException) as e:
         print(f"Error: {e}", file=sys.stderr)
