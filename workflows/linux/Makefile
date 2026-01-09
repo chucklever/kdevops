@@ -56,6 +56,10 @@ endif
 
 ifeq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
 BOOTLINUX_ARGS	+= bootlinux_cloud_build_timeout_minutes='$(subst ",,$(CONFIG_BOOTLINUX_CLOUD_BUILD_TIMEOUT))'
+
+CLOUD_BUILD_PROJECT := $(subst ",,$(CONFIG_TERRAFORM_GCE_PROJECT))
+CLOUD_BUILD_REGION := $(subst ",,$(CONFIG_TERRAFORM_GCE_REGION))
+CLOUD_BUILD_CREDENTIALS := $(subst ",,$(CONFIG_TERRAFORM_GCE_CREDENTIALS))
 endif
 
 # XXX: I can't seem to use after this LINUX_DYNAMIC_RUNTIME_VARS += for other
@@ -252,6 +256,26 @@ linux-help-cxl:
 	@echo "linux-cxl          - Builds cxl_test only and installs it"
 
 LINUX_HELP_EXTRA += linux-help-cxl
+endif
+
+ifeq (y,$(CONFIG_BOOTLINUX_CLOUD_BUILD))
+PHONY += cloud-build-status
+cloud-build-status:
+	@echo "Cloud Build Status ($(CLOUD_BUILD_PROJECT) / $(CLOUD_BUILD_REGION)):"
+	$(Q)GOOGLE_APPLICATION_CREDENTIALS=$(shell realpath $(CLOUD_BUILD_CREDENTIALS)) \
+		python3 $(TOPDIR)/terraform/gce/scripts/cloud_build.py list \
+		--project $(CLOUD_BUILD_PROJECT) \
+		--region $(CLOUD_BUILD_REGION) \
+		--limit 10
+
+# Add cloud build status to make status
+KDEVOPS_STATUS_DEPS += cloud-build-status
+
+PHONY += linux-help-cloud-build
+linux-help-cloud-build:
+	@echo "cloud-build-status - Show recent Cloud Build jobs"
+
+LINUX_HELP_EXTRA += linux-help-cloud-build
 endif
 
 HELP_TARGETS+=linux-help-menu

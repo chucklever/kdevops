@@ -49,6 +49,10 @@ class CloudBuildError(Exception):
     """Raised when a Cloud Build operation fails."""
 
 
+class OperationNotFoundError(CloudBuildError):
+    """Raised when an operation is not found (404), typically meaning it expired."""
+
+
 def submit_build(
     session: AuthorizedSession,
     project: str,
@@ -100,10 +104,20 @@ def get_operation_status(
 
     Returns:
         dict: Operation status including build metadata
+
+    Raises:
+        OperationNotFoundError: If the operation no longer exists (404)
+        CloudBuildError: For other API errors
     """
     url = f"{CLOUD_BUILD_API}/{operation_name}"
 
     response = session.get(url, timeout=API_TIMEOUT)
+
+    if response.status_code == 404:
+        raise OperationNotFoundError(
+            f"Operation not found: {operation_name}. "
+            "The operation may have expired or been deleted."
+        )
 
     if not response.ok:
         raise CloudBuildError(
@@ -262,6 +276,38 @@ def download_object(
             f.write(chunk)
 
 
+def list_builds(
+    session: AuthorizedSession,
+    project: str,
+    region: str,
+    page_size: int = 10,
+) -> list[dict[str, Any]]:
+    """
+    List recent Cloud Builds.
+
+    Args:
+        session: Authenticated requests session
+        project: GCE project ID
+        region: Cloud Build region
+        page_size: Maximum number of builds to return
+
+    Returns:
+        list: List of build metadata dictionaries
+    """
+    url = f"{CLOUD_BUILD_API}/projects/{project}/locations/{region}/builds"
+    params = {"pageSize": page_size}
+
+    response = session.get(url, params=params, timeout=API_TIMEOUT)
+
+    if not response.ok:
+        raise CloudBuildError(
+            f"Failed to list builds: {response.status_code} {response.text}"
+        )
+
+    data = response.json()
+    return data.get("builds", [])
+
+
 def download_artifacts(
     session: AuthorizedSession,
     bucket: str,
@@ -346,6 +392,20 @@ def main() -> None:
     upload_parser.add_argument("--source", required=True, help="Local file path")
     upload_parser.add_argument("--dest", required=True, help="Destination object name")
 
+    # List command
+    list_parser = subparsers.add_parser("list", help="List recent Cloud Builds")
+    list_parser.add_argument("--project", required=True, help="GCE project ID")
+    list_parser.add_argument("--region", required=True, help="Cloud Build region")
+    list_parser.add_argument(
+        "--limit", type=int, default=10, help="Maximum builds to list"
+    )
+    list_parser.add_argument(
+        "--format",
+        choices=["json", "table"],
+        default="table",
+        help="Output format",
+    )
+
     args = parser.parse_args()
 
     try:
@@ -398,6 +458,53 @@ def main() -> None:
             upload_object(session, args.bucket, args.dest, source)
             print(json.dumps({"uploaded": args.dest}))
 
+        elif args.command == "list":
+            builds = list_builds(session, args.project, args.region, args.limit)
+
+            if args.format == "json":
+                print(json.dumps({"builds": builds}))
+            else:
+                # Table format for human-readable output
+                if not builds:
+                    print("No builds found.")
+                else:
+                    print(f"{'STATUS':<12} {'STARTED':<20} {'DURATION':<10} {'ID'}")
+                    print("-" * 70)
+                    for build in builds:
+                        status = build.get("status", "UNKNOWN")
+                        build_id = build.get("id", "N/A")[:12]
+                        start_time = build.get("startTime", "N/A")
+                        if start_time != "N/A":
+                            # Parse and format the timestamp
+                            start_time = start_time[:19].replace("T", " ")
+
+                        # Calculate duration if available
+                        duration = "N/A"
+                        if "startTime" in build and "finishTime" in build:
+                            try:
+                                from datetime import datetime
+
+                                start = datetime.fromisoformat(
+                                    build["startTime"].replace("Z", "+00:00")
+                                )
+                                finish = datetime.fromisoformat(
+                                    build["finishTime"].replace("Z", "+00:00")
+                                )
+                                delta = finish - start
+                                mins, secs = divmod(int(delta.total_seconds()), 60)
+                                duration = f"{mins}m{secs}s"
+                            except (ValueError, KeyError):
+                                pass
+                        elif status in ("WORKING", "QUEUED", "PENDING"):
+                            duration = "running"
+
+                        print(
+                            f"{status:<12} {start_time:<20} {duration:<10} {build_id}"
+                        )
+
+    except OperationNotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(2)  # Distinct exit code for "operation not found"
     except (CloudBuildError, ValueError, requests.exceptions.RequestException) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

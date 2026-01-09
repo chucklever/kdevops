@@ -87,80 +87,144 @@
   run_once: true
   delegate_to: localhost
 
-- name: Submit Cloud Build job
-  ansible.builtin.command:
-    cmd: >-
-      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
-      submit
-      --project {{ cloud_build_project }}
-      --region {{ cloud_build_region }}
-      --config {{ topdir_path }}/terraform/gce/cloudbuild.yaml
-  environment:
-    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
-  register: cloud_build_submit
-  run_once: true
-  delegate_to: localhost
-  changed_when: true
-
-- name: Validate Cloud Build submission output
-  ansible.builtin.fail:
-    msg: >-
-      Cloud Build submission returned no output. Command stderr:
-      {{ cloud_build_submit.stderr | default('(none)') }}
-  when: cloud_build_submit.stdout is not defined or cloud_build_submit.stdout | trim == ''
-  run_once: true
-  delegate_to: localhost
-
-- name: Parse Cloud Build submission result
+# Submit and wait for Cloud Build, with automatic retry if the operation
+# is not found (e.g., expired from a previous interrupted run).
+- name: Submit and wait for Cloud Build
   block:
-    - name: Attempt to parse submission JSON
+    - name: Submit Cloud Build job
+      ansible.builtin.command:
+        cmd: >-
+          python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+          submit
+          --project {{ cloud_build_project }}
+          --region {{ cloud_build_region }}
+          --config {{ topdir_path }}/terraform/gce/cloudbuild.yaml
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
+      register: cloud_build_submit
+      run_once: true
+      delegate_to: localhost
+      changed_when: true
+
+    - name: Validate Cloud Build submission output
+      ansible.builtin.fail:
+        msg: >-
+          Cloud Build submission returned no output. Command stderr:
+          {{ cloud_build_submit.stderr | default('(none)') }}
+      when: cloud_build_submit.stdout is not defined or cloud_build_submit.stdout | trim == ''
+      run_once: true
+      delegate_to: localhost
+
+    - name: Parse Cloud Build submission result
+      block:
+        - name: Attempt to parse submission JSON
+          ansible.builtin.set_fact:
+            cloud_build_submit_parsed: "{{ cloud_build_submit.stdout | from_json }}"
+          run_once: true
+          delegate_to: localhost
+
+        - name: Validate operation key exists
+          ansible.builtin.fail:
+            msg: >-
+              Cloud Build submission response missing 'operation' key.
+              Response: {{ cloud_build_submit_parsed | to_nice_json }}
+          when: cloud_build_submit_parsed.operation is not defined
+          run_once: true
+          delegate_to: localhost
+
+        - name: Set cloud_build_operation
+          ansible.builtin.set_fact:
+            cloud_build_operation: "{{ cloud_build_submit_parsed.operation }}"
+          run_once: true
+          delegate_to: localhost
+      rescue:
+        - name: Report JSON parsing failure
+          ansible.builtin.fail:
+            msg: >-
+              Failed to parse Cloud Build submission output as JSON.
+              Raw output: {{ cloud_build_submit.stdout }}
+          run_once: true
+          delegate_to: localhost
+
+    - name: Display Cloud Build operation
+      ansible.builtin.debug:
+        msg: "Cloud Build submitted: {{ cloud_build_operation }}"
+      run_once: true
+      delegate_to: localhost
+
+    - name: Wait for Cloud Build to complete
+      ansible.builtin.command:
+        cmd: >-
+          python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+          wait
+          --operation {{ cloud_build_operation }}
+          --timeout {{ bootlinux_cloud_build_timeout_minutes | default(60) }}
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
+      register: cloud_build_result
+      run_once: true
+      delegate_to: localhost
+      changed_when: false
+  rescue:
+    # If the wait failed with exit code 2, the operation was not found.
+    # This can happen if a previous build was interrupted and the operation
+    # expired. Re-submit a fresh build.
+    - name: Check if operation was not found
+      ansible.builtin.fail:
+        msg: "Cloud Build failed: {{ cloud_build_result.stderr | default('unknown error') }}"
+      when: cloud_build_result.rc | default(1) != 2
+      run_once: true
+      delegate_to: localhost
+
+    - name: Log operation not found, resubmitting
+      ansible.builtin.debug:
+        msg: >-
+          Previous Cloud Build operation not found (may have expired).
+          Submitting a fresh build.
+      run_once: true
+      delegate_to: localhost
+
+    - name: Resubmit Cloud Build job
+      ansible.builtin.command:
+        cmd: >-
+          python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+          submit
+          --project {{ cloud_build_project }}
+          --region {{ cloud_build_region }}
+          --config {{ topdir_path }}/terraform/gce/cloudbuild.yaml
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
+      register: cloud_build_submit
+      run_once: true
+      delegate_to: localhost
+      changed_when: true
+
+    - name: Parse resubmission result
       ansible.builtin.set_fact:
         cloud_build_submit_parsed: "{{ cloud_build_submit.stdout | from_json }}"
+        cloud_build_operation: "{{ (cloud_build_submit.stdout | from_json).operation }}"
       run_once: true
       delegate_to: localhost
 
-    - name: Validate operation key exists
-      ansible.builtin.fail:
-        msg: >-
-          Cloud Build submission response missing 'operation' key.
-          Response: {{ cloud_build_submit_parsed | to_nice_json }}
-      when: cloud_build_submit_parsed.operation is not defined
+    - name: Display resubmitted Cloud Build operation
+      ansible.builtin.debug:
+        msg: "Cloud Build resubmitted: {{ cloud_build_operation }}"
       run_once: true
       delegate_to: localhost
 
-    - name: Set cloud_build_operation
-      ansible.builtin.set_fact:
-        cloud_build_operation: "{{ cloud_build_submit_parsed.operation }}"
+    - name: Wait for resubmitted Cloud Build to complete
+      ansible.builtin.command:
+        cmd: >-
+          python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
+          wait
+          --operation {{ cloud_build_operation }}
+          --timeout {{ bootlinux_cloud_build_timeout_minutes | default(60) }}
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
+      register: cloud_build_result
       run_once: true
       delegate_to: localhost
-  rescue:
-    - name: Report JSON parsing failure
-      ansible.builtin.fail:
-        msg: >-
-          Failed to parse Cloud Build submission output as JSON.
-          Raw output: {{ cloud_build_submit.stdout }}
-      run_once: true
-      delegate_to: localhost
-
-- name: Display Cloud Build operation
-  ansible.builtin.debug:
-    msg: "Cloud Build submitted: {{ cloud_build_operation }}"
-  run_once: true
-  delegate_to: localhost
-
-- name: Wait for Cloud Build to complete
-  ansible.builtin.command:
-    cmd: >-
-      python3 {{ topdir_path }}/terraform/gce/scripts/cloud_build.py
-      wait
-      --operation {{ cloud_build_operation }}
-      --timeout {{ bootlinux_cloud_build_timeout_minutes | default(60) }}
-  environment:
-    GOOGLE_APPLICATION_CREDENTIALS: "{{ terraform_gce_credentials | expanduser }}"
-  register: cloud_build_result
-  run_once: true
-  delegate_to: localhost
-  changed_when: false
+      changed_when: false
 
 - name: Parse Cloud Build result
   ansible.builtin.set_fact:
