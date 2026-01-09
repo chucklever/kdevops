@@ -65,4 +65,17 @@ config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_TYPE
 	default "N1_HIGHCPU_8" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_8
 	default "N1_HIGHCPU_32" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_32
 
+config TERRAFORM_GCE_CLOUD_BUILD_SERVICE_ACCOUNT_ID
+	string "Service account ID"
+	output yaml
+	default "kdevops-cloud-build"
+	help
+	  ID for the GCE service account created to run Cloud Build
+	  operations. The ID must be 6-30 characters using lowercase
+	  letters, numbers, and dashes. Terraform provisions this
+	  account with permissions to access the artifact bucket and
+	  submit builds. See the GCE documentation for details:
+
+	  https://cloud.google.com/iam/docs/service-accounts-create
+
 endif # BOOTLINUX_CLOUD_BUILD

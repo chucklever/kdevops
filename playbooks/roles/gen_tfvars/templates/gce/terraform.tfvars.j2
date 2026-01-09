@@ -25,3 +25,10 @@ ssh_config_port = {{ ansible_cfg_ssh_port }}
 ssh_config_update = "{{ kdevops_terraform_ssh_config_update | lower }}"
 ssh_config_use_strict_settings = "{{ kdevops_terraform_ssh_config_update_strict | lower }}"
 ssh_config_backup = "{{ kdevops_terraform_ssh_config_update_backup | lower }}"
+
+{% if bootlinux_cloud_build is defined and bootlinux_cloud_build %}
+gce_cloud_build_enabled = true
+gce_cloud_build_bucket = "{{ terraform_gce_cloud_build_bucket }}"
+gce_cloud_build_retention_days = {{ terraform_gce_cloud_build_retention_days }}
+gce_cloud_build_service_account_id = "{{ terraform_gce_cloud_build_service_account_id }}"
+{% endif %}
