@@ -1,0 +1,18 @@
+---
+# GCE-specific pre-destroy tasks
+# Runs before generic terraform destroy for GCE provider
+
+- name: Preserve cloud build artifact bucket by removing from Terraform state
+  ansible.builtin.command:
+    cmd: >-
+      {{ terraform_binary_path }} state rm
+      module.kdevops_cloud_build[0].google_storage_bucket.kernel_artifacts
+    chdir: "{{ topdir_path }}/terraform/{{ kdevops_terraform_provider }}"
+  register: state_rm_result
+  changed_when: state_rm_result.rc == 0
+  failed_when: false
+  when:
+    - bootlinux_cloud_build | default(false) | bool
+    - terraform_gce_cloud_build_preserve_artifacts | default(false) | bool
+  tags:
+    - destroy

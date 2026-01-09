@@ -42,21 +42,22 @@ DevOps, though these are not yet implemented.
 4. **Service account permissions**: The Cloud Build service account needs
    Storage Object Admin on the artifact bucket
 
-## Production-Safe Defaults
+## Artifact Bucket Defaults
 
-The GCS artifact bucket is configured with production-safe defaults:
+The GCS artifact bucket is configured with these defaults:
 
 - **Object versioning enabled**: Previous versions of artifacts are retained,
   allowing recovery from accidental overwrites or deletions
 - **Public access prevention enforced**: The bucket cannot be made publicly
   accessible, preventing accidental data exposure
-- **Force destroy disabled**: Terraform will refuse to destroy the bucket if
-  it contains objects, preventing accidental data loss during `terraform
-  destroy`
+- **Deleted on destroy**: By default, `make destroy` removes the bucket and
+  all stored artifacts, matching the behavior of other build modes and
+  avoiding storage costs after teardown
 
-For development or testing environments where rapid iteration is preferred,
-set `cb_force_destroy = true` in your Terraform configuration to allow bucket
-destruction without manual cleanup.
+To retain kernel packages after destroy, enable "Preserve artifacts on
+destroy" in menuconfig. When enabled, the artifact bucket is removed from
+Terraform state before destroy, allowing destroy to complete while leaving
+the bucket intact in GCS for later use or manual cleanup.
 
 ## Configuration
 
@@ -189,5 +190,11 @@ contains:
 | `cb_region` | (required) | GCE region for the bucket |
 | `cb_bucket_name` | (auto) | Bucket name (auto-generated if empty) |
 | `cb_artifact_retention_days` | 30 | Days to retain artifacts |
-| `cb_force_destroy` | false | Allow bucket deletion when non-empty |
+| `cb_force_destroy` | true | Delete bucket and contents on destroy |
 | `cb_service_account_id` | kdevops-cloud-build | Service account ID |
+
+### Kconfig Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `TERRAFORM_GCE_CLOUD_BUILD_PRESERVE_ARTIFACTS` | n | Preserve artifact bucket on destroy |

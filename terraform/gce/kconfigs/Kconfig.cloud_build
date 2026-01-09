@@ -78,4 +78,19 @@ config TERRAFORM_GCE_CLOUD_BUILD_SERVICE_ACCOUNT_ID
 
 	  https://cloud.google.com/iam/docs/service-accounts-create
 
+config TERRAFORM_GCE_CLOUD_BUILD_PRESERVE_ARTIFACTS
+	bool "Preserve artifacts on destroy"
+	output yaml
+	default n
+	help
+	  When enabled, the artifact bucket is removed from Terraform
+	  state before destroy. This allows destroy to complete while
+	  leaving the bucket and its kernel packages intact in GCS for
+	  later use or manual cleanup.
+
+	  When disabled (the default), all resources are released on
+	  destroy, including any stored artifacts. This matches the
+	  behavior of other build modes and avoids accruing storage
+	  costs after teardown.
+
 endif # BOOTLINUX_CLOUD_BUILD

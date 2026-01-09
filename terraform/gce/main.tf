@@ -77,5 +77,6 @@ module "kdevops_cloud_build" {
   cb_bucket_name             = var.gce_cloud_build_bucket
   cb_artifact_retention_days = var.gce_cloud_build_retention_days
   cb_service_account_id      = var.gce_cloud_build_service_account_id
+  cb_force_destroy           = !var.gce_cloud_build_preserve_artifacts
   source                     = "./kdevops_cloud_build"
 }

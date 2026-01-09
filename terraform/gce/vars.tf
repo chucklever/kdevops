@@ -92,3 +92,9 @@ variable "gce_cloud_build_service_account_id" {
   description = "Service account ID for Cloud Build operations"
   type        = string
 }
+
+variable "gce_cloud_build_preserve_artifacts" {
+  description = "Preserve artifact bucket on destroy by removing it from Terraform state"
+  type        = bool
+  default     = false
+}

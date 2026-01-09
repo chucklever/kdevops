@@ -9,6 +9,14 @@
   tags:
     - destroy
 
+- name: Include GCE destroy tasks
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/destroy/gce.yml"
+  when:
+    - kdevops_terraform_provider == "gce"
+  tags:
+    - destroy
+
 - name: Include DataCrunch destroy tasks
   ansible.builtin.include_tasks:
     file: "{{ role_path }}/tasks/destroy/datacrunch.yml"
