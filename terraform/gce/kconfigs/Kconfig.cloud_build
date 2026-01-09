@@ -18,4 +18,51 @@ config TERRAFORM_GCE_CLOUD_BUILD_RETENTION_DAYS
 	  bucket before automatic deletion. Older artifacts are
 	  cleaned up to manage storage costs.
 
+choice
+	prompt "Cloud Build machine type"
+	default TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_HIGHCPU_8
+	help
+	  Machine type for Cloud Build workers. Larger machines
+	  reduce build time but increase cost.
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_MEDIUM
+	bool "E2_MEDIUM"
+	help
+	  E2 machine with 1 vCPU and 4GB memory. Lowest cost option,
+	  suitable for small builds.
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_HIGHCPU_8
+	bool "E2_HIGHCPU_8"
+	help
+	  E2 high-CPU machine with 8 vCPUs and 8GB memory. Good
+	  balance of cost and performance for kernel builds.
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_HIGHCPU_32
+	bool "E2_HIGHCPU_32"
+	help
+	  E2 high-CPU machine with 32 vCPUs and 32GB memory. Faster
+	  builds at higher cost.
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_8
+	bool "N1_HIGHCPU_8"
+	help
+	  N1 high-CPU machine with 8 vCPUs and 7.2GB memory.
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_32
+	bool "N1_HIGHCPU_32"
+	help
+	  N1 high-CPU machine with 32 vCPUs and 28.8GB memory.
+	  Fastest builds at highest cost.
+
+endchoice
+
+config TERRAFORM_GCE_CLOUD_BUILD_MACHINE_TYPE
+	string
+	output yaml
+	default "E2_MEDIUM" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_MEDIUM
+	default "E2_HIGHCPU_8" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_HIGHCPU_8
+	default "E2_HIGHCPU_32" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_E2_HIGHCPU_32
+	default "N1_HIGHCPU_8" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_8
+	default "N1_HIGHCPU_32" if TERRAFORM_GCE_CLOUD_BUILD_MACHINE_N1_HIGHCPU_32
+
 endif # BOOTLINUX_CLOUD_BUILD
