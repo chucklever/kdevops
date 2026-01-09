@@ -79,8 +79,9 @@ steps:
 {% else %}
             # Install build dependencies for Fedora/RHEL
             dnf install -y \
-              make gcc flex bison openssl-devel elfutils-libelf-devel \
-              bc perl rpm-build rsync
+              make gcc flex bison openssl openssl-devel \
+              elfutils-libelf-devel elfutils-devel dwarves \
+              bc perl rpm-build rsync hostname
 
             # Configure and build
             make -j$(nproc) olddefconfig

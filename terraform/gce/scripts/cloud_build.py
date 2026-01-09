@@ -58,7 +58,7 @@ def submit_build(
     project: str,
     region: str,
     build_config: dict[str, Any],
-) -> str:
+) -> dict[str, str]:
     """
     Submit a build to Cloud Build.
 
@@ -69,7 +69,7 @@ def submit_build(
         build_config: Cloud Build configuration dictionary
 
     Returns:
-        str: Build operation name (used to poll status)
+        dict: Contains 'operation' (operation name) and 'build_id' (build ID)
 
     Raises:
         CloudBuildError: If submission fails
@@ -84,11 +84,19 @@ def submit_build(
         )
 
     data = response.json()
-    # Response contains an operation, the build ID is in metadata
     operation_name = data.get("name")
     if not operation_name:
         raise CloudBuildError(f"API response missing operation name: {data}")
-    return operation_name
+
+    # Extract build ID from metadata for direct polling (operations endpoint
+    # does not work reliably for regional builds)
+    metadata = data.get("metadata", {})
+    build = metadata.get("build", {})
+    build_id = build.get("id")
+    if not build_id:
+        raise CloudBuildError(f"API response missing build ID in metadata: {data}")
+
+    return {"operation": operation_name, "build_id": build_id}
 
 
 def get_operation_status(
@@ -97,6 +105,9 @@ def get_operation_status(
 ) -> dict[str, Any]:
     """
     Get the status of a long-running operation.
+
+    Note: This endpoint does not work reliably for regional builds.
+    Use get_build_status() instead.
 
     Args:
         session: Authenticated requests session
@@ -127,9 +138,52 @@ def get_operation_status(
     return response.json()
 
 
+def get_build_status(
+    session: AuthorizedSession,
+    project: str,
+    region: str,
+    build_id: str,
+) -> dict[str, Any]:
+    """
+    Get the status of a Cloud Build by querying the build endpoint directly.
+
+    This method is more reliable for regional builds than polling the
+    operation endpoint.
+
+    Args:
+        session: Authenticated requests session
+        project: GCE project ID
+        region: Cloud Build region
+        build_id: Build ID from submit_build
+
+    Returns:
+        dict: Build status and metadata
+
+    Raises:
+        CloudBuildError: If the API request fails
+    """
+    url = f"{CLOUD_BUILD_API}/projects/{project}/locations/{region}/builds/{build_id}"
+
+    response = session.get(url, timeout=API_TIMEOUT)
+
+    if response.status_code == 404:
+        raise OperationNotFoundError(
+            f"Build not found: {build_id}. " "The build may have been deleted."
+        )
+
+    if not response.ok:
+        raise CloudBuildError(
+            f"Failed to get build status: {response.status_code} {response.text}"
+        )
+
+    return response.json()
+
+
 def wait_for_build(
     session: AuthorizedSession,
-    operation_name: str,
+    project: str,
+    region: str,
+    build_id: str,
     timeout_minutes: int = 60,
     poll_interval: int = 30,
 ) -> dict[str, Any]:
@@ -138,7 +192,9 @@ def wait_for_build(
 
     Args:
         session: Authenticated requests session
-        operation_name: Operation name from submit_build
+        project: GCE project ID
+        region: Cloud Build region
+        build_id: Build ID from submit_build
         timeout_minutes: Maximum wait time
         poll_interval: Seconds between status checks
 
@@ -150,21 +206,14 @@ def wait_for_build(
     """
     deadline = time.time() + (timeout_minutes * 60)
 
+    # Terminal build statuses
+    terminal_statuses = {"SUCCESS", "FAILURE", "INTERNAL_ERROR", "TIMEOUT", "CANCELLED"}
+
     while time.time() < deadline:
-        operation = get_operation_status(session, operation_name)
+        build = get_build_status(session, project, region, build_id)
+        status = build.get("status", "UNKNOWN")
 
-        if operation.get("done"):
-            if "error" in operation:
-                error = operation["error"]
-                raise CloudBuildError(
-                    f"Build failed: {error.get('message', 'Unknown error')}"
-                )
-
-            # Extract build result from metadata
-            metadata = operation.get("metadata", {})
-            build = metadata.get("build", {})
-            status = build.get("status", "UNKNOWN")
-
+        if status in terminal_statuses:
             if status == "SUCCESS":
                 return build
             else:
@@ -371,9 +420,9 @@ def main() -> None:
 
     # Wait command
     wait_parser = subparsers.add_parser("wait", help="Wait for build completion")
-    wait_parser.add_argument(
-        "--operation", required=True, help="Operation name from submit"
-    )
+    wait_parser.add_argument("--project", required=True, help="GCE project ID")
+    wait_parser.add_argument("--region", required=True, help="Cloud Build region")
+    wait_parser.add_argument("--build-id", required=True, help="Build ID from submit")
     wait_parser.add_argument(
         "--timeout", type=int, default=60, help="Timeout in minutes"
     )
@@ -441,11 +490,14 @@ def main() -> None:
                     substitutions[key] = value
                 config["substitutions"] = substitutions
 
-            operation = submit_build(session, args.project, args.region, config)
-            print(json.dumps({"operation": operation}))
+            result = submit_build(session, args.project, args.region, config)
+            print(json.dumps(result))
 
         elif args.command == "wait":
-            result = wait_for_build(session, args.operation, args.timeout)
+            build_id = getattr(args, "build_id", None)
+            result = wait_for_build(
+                session, args.project, args.region, build_id, args.timeout
+            )
             print(json.dumps(result))
 
         elif args.command == "download":
