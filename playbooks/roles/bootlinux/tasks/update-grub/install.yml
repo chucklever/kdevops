@@ -171,6 +171,20 @@
         - grub_boot_number_cmd.stdout is defined
         - grub_boot_number_cmd.stdout != ""
 
+    - name: Set the target kernel to be booted by default on RedHat (source tree)
+      become: true
+      become_flags: "su - -c"
+      become_method: ansible.builtin.sudo
+      ansible.builtin.command:
+        cmd: "/usr/sbin/grubby --set-default=/boot/vmlinuz-{{ kernelrelease }}"
+      changed_when: true
+      tags: ["saved"]
+      when:
+        - kernel_release_file.stat.exists
+        - kernelrelease is defined
+        - kernelrelease != "unknown"
+        - ansible_facts['os_family']|lower == 'redhat'
+
     - name: Itemize kernel and GRUB entry selected (source tree)
       ansible.builtin.debug:
         msg: >-
@@ -260,6 +274,20 @@
         - grub_boot_number_cmd.rc == 0
         - grub_boot_number_cmd.stdout is defined
         - grub_boot_number_cmd.stdout != ""
+
+    - name: Set the target kernel to be booted by default on RedHat (package)
+      become: true
+      become_flags: "su - -c"
+      become_method: ansible.builtin.sudo
+      ansible.builtin.command:
+        cmd: "/usr/sbin/grubby --set-default=/boot/vmlinuz-{{ kernelrelease }}"
+      changed_when: true
+      tags: ["saved"]
+      when:
+        - kernel_release_file.stat.exists
+        - kernelrelease is defined
+        - kernelrelease != "unknown"
+        - ansible_facts['os_family']|lower == 'redhat'
 
     - name: Itemize kernel and GRUB entry selected (package)
       ansible.builtin.debug:
