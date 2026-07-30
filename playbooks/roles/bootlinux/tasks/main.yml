@@ -407,3 +407,16 @@
   vars:
     running_kernel: "{{ uname_cmd.stdout_lines.0 }}"
   tags: ["uname"]
+
+- name: Verify the node booted the kernel we installed
+  ansible.builtin.assert:
+    that:
+      - uname_cmd.stdout_lines.0 == kernelrelease
+    fail_msg: >-
+      Booted {{ uname_cmd.stdout_lines.0 }} but installed {{ kernelrelease }}.
+      The bootloader default still points at another kernel, so the kernel
+      under test was installed but never booted.
+  tags: ["uname"]
+  when:
+    - kernelrelease is defined
+    - kernelrelease != "unknown"
