@@ -556,6 +556,72 @@
     - devconfig_enable_console|bool
     - not console_grep.changed or console_blank_grep.changed
 
+- name: Set up kdump crash dump capture
+  tags: ["kdump"]
+  when:
+    - devconfig_enable_kdump|bool
+  block:
+    - name: Install the kdump tooling
+      become: true
+      become_flags: "su - -c"
+      become_method: sudo
+      ansible.builtin.package:
+        name: kexec-tools
+        state: present
+
+    - name: Drop any existing crashkernel= from GRUB_CMDLINE_LINUX
+      become: true
+      become_flags: "su - -c"
+      become_method: sudo
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(^GRUB_CMDLINE_LINUX=".*?)\s*crashkernel=\S+(.*"$)'
+        replace: '\1\2'
+      when:
+        - grub2_config_file.stat.exists
+
+    - name: Reserve memory for the crash kernel in GRUB_CMDLINE_LINUX
+      become: true
+      become_flags: "su - -c"
+      become_method: sudo
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^(GRUB_CMDLINE_LINUX=")(.*)"$'
+        backrefs: true
+        line: '\1\2 crashkernel={{ devconfig_kdump_crashkernel }}"'
+      when:
+        - grub2_config_file.stat.exists
+
+    - name: Update your boot GRUB file for the crash kernel reservation
+      ansible.builtin.import_tasks: update-grub/main.yml
+      when:
+        - grub2_config_file.stat.exists
+
+    - name: Apply the crash kernel reservation to the installed kernels on RedHat
+      become: true
+      become_flags: "su - -c"
+      become_method: sudo
+      ansible.builtin.command:
+        cmd: >-
+          /usr/sbin/grubby --update-kernel=ALL
+          --args="crashkernel={{ devconfig_kdump_crashkernel }}"
+      changed_when: true
+      when:
+        - ansible_facts['os_family']|lower == 'redhat'
+
+    - name: Enable the kdump service
+      become: true
+      become_flags: "su - -c"
+      become_method: sudo
+      ansible.builtin.systemd_service:
+        name: "{{ kdump_service_name }}"
+        enabled: true
+      vars:
+        kdump_service_name: >-
+          {{ 'kdump-tools'
+             if ansible_facts['os_family']|lower == 'debian'
+             else 'kdump' }}
+
 - name: Set up the client /etc/systemd/journal-upload.conf
   tags: ["journal"]
   become: true
