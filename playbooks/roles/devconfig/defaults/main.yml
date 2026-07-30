@@ -52,6 +52,9 @@ devconfig_enable_systemd_journal_remote: false
 devconfig_systemd_journal_remote_url: "http://192.168.124.1"
 devconfig_systemd_journal_remote_path: "/var/log/journal/remote/"
 
+devconfig_enable_kdump: false
+devconfig_kdump_crashkernel: "256M"
+
 devconfig_enable_systemd_timesyncd: false
 devconfig_enable_systemd_timesyncd_ntp: false
 devconfig_enable_systemd_timesyncd_ntp_google: false

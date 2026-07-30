@@ -221,6 +221,40 @@ config DEVCONFIG_SYSTEMD_JOURNAL_REMOTE_URL
 
 endif # DEVCONFIG_ENABLE_SYSTEMD_JOURNAL_REMOTE
 
+config DEVCONFIG_ENABLE_KDUMP
+	bool "Set up kdump crash dump capture"
+	output yaml
+	default n
+	help
+	  A node whose kernel dies hard leaves nothing behind: it stops
+	  answering ssh, the serial console goes quiet, and on a cloud
+	  instance the journal is often volatile so a reboot erases what
+	  was logged. Enable this to reserve memory for a crash kernel and
+	  start the kdump service on every test node, so the dying kernel
+	  writes a vmcore before it goes away.
+
+	  The vmcore lands under /var/crash on the node. Retrieve it before
+	  the node is destroyed.
+
+	  Note that the crash kernel reservation is taken out of the node's
+	  RAM and only takes effect after the next reboot.
+
+if DEVCONFIG_ENABLE_KDUMP
+
+config DEVCONFIG_KDUMP_CRASHKERNEL
+	string "Value to use for the crashkernel= kernel parameter"
+	output yaml
+	default "256M"
+	help
+	  Passed to the kernel as crashkernel=<value> to reserve memory for
+	  the crash kernel. Accepts anything the kernel accepts, so a plain
+	  size such as 256M, a range specification such as
+	  512M-2G:64M,2G-:256M, or "auto" where the distribution supports
+	  it. Raise this if the crash kernel runs out of memory before it
+	  finishes writing the vmcore.
+
+endif # DEVCONFIG_ENABLE_KDUMP
+
 config DEVCONFIG_ENABLE_SYSTEMD_TIMESYNCD
 	bool "Set up systemd-timesyncd"
 	default n
