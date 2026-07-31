@@ -35,6 +35,7 @@ if CALLBACK_DIR not in sys.path:
 
 try:
     import lucid  # noqa: E402
+
     ANSIBLE_IMPORT_ERROR = None
 except Exception as exc:  # pragma: no cover - exercised only on broken envs
     lucid = None
