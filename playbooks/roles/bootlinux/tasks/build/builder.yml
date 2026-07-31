@@ -251,7 +251,10 @@
         jobs: "{{ ansible_facts['processor_nproc'] }}"
         target: "binrpm-pkg"
         params:
-          RPMOPTS: '--without devel --without debuginfo --define "install_mod_strip 1"'
+          RPMOPTS: >-
+            --without devel --without debuginfo
+            --define "install_mod_strip 1"
+            --define "_binary_payload w19T0.zstdio"
       when:
         - bootlinux_compiler_gcc|bool
 
@@ -261,7 +264,10 @@
         jobs: "{{ ansible_facts['processor_nproc'] }}"
         target: "binrpm-pkg"
         params:
-          RPMOPTS: '--without devel --without debuginfo --define "install_mod_strip 1"'
+          RPMOPTS: >-
+            --without devel --without debuginfo
+            --define "install_mod_strip 1"
+            --define "_binary_payload w19T0.zstdio"
           LLVM: 1
       when:
         - bootlinux_compiler_clang|bool
