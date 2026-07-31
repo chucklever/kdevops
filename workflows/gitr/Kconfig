@@ -99,6 +99,25 @@ config GITR_REPO_COMMIT
 	help
 	  The commit to be used for the test.
 
+config GITR_TEST_TIMEOUT
+	int "Time limit for a test run, in minutes"
+	default 150
+	help
+	  The maximum wall clock time the regression suite is allowed to
+	  run before it is terminated. Once the limit expires the playbook
+	  regains control and collects whatever results the run produced,
+	  instead of the run sitting on a wedged test until something
+	  outside kdevops kills the whole play and takes the results with
+	  it.
+
+	  Set this above the longest healthy run you expect on the file
+	  system under test: a full run takes well under an hour locally
+	  but around an hour and a half over NFS. When running under CI,
+	  keep it below the CI's own step timeout so this limit is the one
+	  that fires first.
+
+	  Say 0 here to run without a time limit.
+
 if KDEVOPS_WORKFLOW_DEDICATE_GITR
 
 config GITR_ALL_TESTS
