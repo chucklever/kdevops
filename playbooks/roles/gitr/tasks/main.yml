@@ -260,12 +260,17 @@
   when:
     - gitr_thread_custom|bool
 
+- name: Set the test run time limit
+  tags: ["run_tests", "run_specific_tests"]
+  ansible.builtin.set_fact:
+    gitr_timeout_cmd: "{{ 'timeout --kill-after=60s ' ~ gitr_test_timeout ~ 'm ' if gitr_test_timeout|int > 0 else '' }}"
+
 - name: Run the full git regression suite
   tags: run_tests
   environment:
     GIT_TEST_CLONE_2GB: "true"
   ansible.builtin.shell:
-    cmd: "prove -a /tmp/{{ gitr_run_uniqifier }}.tgz --jobs {{ gitr_test_thread_count }} ./t[0-9]*.sh :: --verbose-log"
+    cmd: "{{ gitr_timeout_cmd }}prove -a /tmp/{{ gitr_run_uniqifier }}.tgz --jobs {{ gitr_test_thread_count }} ./t[0-9]*.sh :: --verbose-log"
     chdir: "{{ gitr_mnt }}/git/t"
   register: gitr_results
   failed_when: false
@@ -274,7 +279,7 @@
 - name: Run specific git regression tests
   tags: run_specific_tests
   ansible.builtin.command:
-    cmd: "prove -a /tmp/{{ gitr_run_uniqifier }}.tgz {{ gitr_test_list }} :: --verbose-log"
+    cmd: "{{ gitr_timeout_cmd }}prove -a /tmp/{{ gitr_run_uniqifier }}.tgz {{ gitr_test_list }} :: --verbose-log"
     chdir: "{{ gitr_mnt }}/git/t"
   register: gitr_results
   failed_when: false

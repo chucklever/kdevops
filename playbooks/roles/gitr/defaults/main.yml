@@ -10,6 +10,9 @@ kdevops_workflows_dedicated_workflow: false
 gitr_test_list: ""
 gitr_uses_no_devices: false
 
+# Wall clock limit for a test run, in minutes. 0 means no limit.
+gitr_test_timeout: 0
+
 # NFS-specific defaults
 gitr_nfs_use_kdevops_nfsd: false
 gitr_nfs_pnfs_block_enable: false

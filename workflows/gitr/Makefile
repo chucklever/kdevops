@@ -29,6 +29,9 @@ GITR_ARGS += gitr_repo=$(GITR_REPO)
 GITR_REPO_COMMIT:=$(subst ",,$(CONFIG_GITR_REPO_COMMIT))
 GITR_ARGS += gitr_repo_commit=$(GITR_REPO_COMMIT)
 
+GITR_TEST_TIMEOUT:=$(subst ",,$(CONFIG_GITR_TEST_TIMEOUT))
+GITR_ARGS += gitr_test_timeout=$(GITR_TEST_TIMEOUT)
+
 ifeq (y,$(CONFIG_GITR_ALL_TESTS))
 GITR_PLAY_TAGS := vars,run_tests,copy_results
 else
