@@ -219,7 +219,7 @@
   ansible.builtin.shell: |
     SOURCE_BASH_HACKS="test -s {{ dev_bash_config_hacks_generic }}  && . {{ dev_bash_config_hacks_generic }} || true"
     if [ -f {{ dev_bash_config }} ]; then
-      if ! grep "{{ dev_bash_config_hacks_name }}" {{ dev_bash_config }}  2>&1 > /dev/null ; then
+      if ! grep "{{ dev_bash_config_hacks_name }}" {{ dev_bash_config }} > /dev/null 2>&1 ; then
         echo "$SOURCE_BASH_HACKS" >> {{ dev_bash_config }}
       fi
     else
@@ -246,7 +246,7 @@
   ansible.builtin.shell: |
     SOURCE_BASH_HACKS="test -s {{ dev_bash_config_hacks_generic }}  && . {{ dev_bash_config_hacks_generic }} || true"
     if [ -f {{ dev_bash_config_root }} ]; then
-      if ! grep "{{ dev_bash_config_hacks_name }}" {{ dev_bash_config_root }}  2>&1 > /dev/null ; then
+      if ! grep "{{ dev_bash_config_hacks_name }}" {{ dev_bash_config_root }} > /dev/null 2>&1 ; then
         echo "$SOURCE_BASH_HACKS" >> {{ dev_bash_config_root }}
       fi
     else
