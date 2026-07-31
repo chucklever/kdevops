@@ -213,7 +213,6 @@
 - name: Copy the developer's favorite bash hacks over *if* it exists
   ansible.builtin.copy: src={{ dev_bash_config_hacks_src }} dest={{ dev_bash_config_hacks_dest }}
   when: dev_bash_config_file.stat.exists
-  register: dev_bash_config_file_copied
 
 - name: Source the developer's bash hack script
   ansible.builtin.shell: |
@@ -229,7 +228,7 @@
     fi
   args:
     executable: "{{ '/run/current-system/sw/bin/bash' if (kdevops_enable_nixos_flake | default(false)) else '/bin/bash' }}"
-  when: dev_bash_config_file_copied is success
+  when: dev_bash_config_file.stat.exists
 
 - name: Copy the developer's favorite bash hacks over for root *if* it exists
   become: true
@@ -237,7 +236,6 @@
   become_method: sudo
   ansible.builtin.copy: src={{ dev_bash_config_hacks_src }} dest=/root/
   when: dev_bash_config_file.stat.exists
-  register: dev_bash_config_file_copied_root
 
 - name: Source the developer's bash hack script for root
   become: true
@@ -256,7 +254,7 @@
     fi
   args:
     executable: "{{ '/run/current-system/sw/bin/bash' if (kdevops_enable_nixos_flake | default(false)) else '/bin/bash' }}"
-  when: dev_bash_config_file_copied_root is success
+  when: dev_bash_config_file.stat.exists
 
 - name: Check to see if system has GRUB2
   ansible.builtin.stat:
