@@ -170,7 +170,7 @@
 - name: Set the pathname of the install directory
   tags: ["build", "ltp"]
   ansible.builtin.set_fact:
-    ltp_install_dir: "{{ data_path }}/opt"
+    ltp_install_dir: "{{ data_path }}/opt/ltp"
 
 - name: Remove existing ltp install directory
   tags: ["build", "ltp"]
@@ -193,15 +193,26 @@
     mode: "u=rwx,g=rwx,o=rwxt"
     state: directory
 
-- name: Replace /opt with a symlink to the ltp install directory
+- name: Remove any existing /opt/ltp
   tags: ["build", "ltp"]
   become: true
   become_flags: "su - -c"
   become_method: ansible.builtin.sudo
-  ansible.builtin.shell:
-    cmd: "rm -rf /opt && ln -s {{ ltp_install_dir }} /opt"
-  args:
-    creates: "/opt/ltp"
+  ansible.builtin.file:
+    path: "/opt/ltp"
+    state: absent
+
+- name: Replace /opt/ltp with a symlink to the ltp install directory
+  tags: ["build", "ltp"]
+  become: true
+  become_flags: "su - -c"
+  become_method: ansible.builtin.sudo
+  ansible.builtin.file:
+    src: "{{ ltp_install_dir }}"
+    dest: "/opt/ltp"
+    owner: "root"
+    group: "root"
+    state: link
 
 - name: Install ltp on the test systems
   tags: ["ltp"]
