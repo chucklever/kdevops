@@ -2,7 +2,7 @@
 #
 # pynfs: Python-based NFSv4 protocol conformance tests.
 #
-# Upstream: https://git.linux-nfs.org/?p=bfields/pynfs.git
+# Upstream: https://github.com/linux-nfs/pynfs/
 #
 # pynfs is cloned and driven by the consumer's own tooling. This
 # module supplies only the Python runtime and ply parser-generator

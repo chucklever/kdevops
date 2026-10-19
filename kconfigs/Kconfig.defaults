@@ -59,7 +59,7 @@ config DEFAULT_KDEVOPS_LINUX_HTTPS_URL
 config DEFAULT_PYNFS_GIT_URL
 	string
 	output yaml
-	default "git://git.linux-nfs.org/projects/cdmackay/pynfs.git"
+	default "https://github.com/linux-nfs/pynfs.git"
 
 config DEFAULT_QEMU_GITHUB_HTTPS_URL
 	string
