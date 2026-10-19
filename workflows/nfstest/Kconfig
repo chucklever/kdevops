@@ -38,7 +38,7 @@ config NFSTEST_REPO_CUSTOM
 	default n
 	help
 	  Choose Y to enter a custom URL to clone from. Choose N to clone
-	  from the master nfstest source code repo on git.linux-nfs.org or
+	  from the master nfstest source code repo on GitHub or
 	  a local mirror (chosen automatically).
 
 config NFSTEST_REPO_URL

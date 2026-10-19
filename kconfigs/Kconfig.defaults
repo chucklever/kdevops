@@ -161,7 +161,7 @@ config DEFAULT_MCGROF_NEXT_HTTPS_GOOGLE_URL
 config DEFAULT_NFSTEST_URL
 	string
 	output yaml
-	default "git://git.linux-nfs.org/projects/mora/nfstest.git"
+	default "https://github.com/linux-nfs/nfstest.git"
 
 config DEFAULT_TORVALDS_GIT_URL
 	string
